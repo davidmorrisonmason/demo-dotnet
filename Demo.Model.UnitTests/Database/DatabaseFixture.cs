@@ -11,6 +11,11 @@ public class DatabaseFixture
 
     public DatabaseFixture()
     {
+        if (!File.Exists("..\\..\\..\\..\\Databases\\DemoTestDatabase.db"))
+        {
+            File.Create("..\\..\\..\\..\\Databases\\DemoTestDatabase.db");
+        }
+
         DbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseSqlite("Data Source=..\\..\\..\\..\\Databases\\DemoTestDatabase.db")
             .Options;
