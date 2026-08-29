@@ -12,5 +12,6 @@ public class CategoryUpdateDto
 
 public class CategoryDto : EntityDto
 {
-    public required string Name { get; set; }
+    public string Name { get; set; }
+    public List<ProductDto> Products { get; set; } = [];
 }

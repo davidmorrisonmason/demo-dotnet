@@ -6,8 +6,15 @@ public class ProductCreateDto
     public decimal Price { get; set; } = 0;
 }
 
-public class ProductDto
+public class ProductUpdateDto
 {
+    public string Name { get; set; } = "";
+    public decimal Price { get; set; } = 0;
+}
+
+public class ProductDto : EntityDto
+{
+    public int Id { get; set; } = 0;
     public string Name { get; set; } = "";
     public decimal Price { get; set; } = 0;
 }
