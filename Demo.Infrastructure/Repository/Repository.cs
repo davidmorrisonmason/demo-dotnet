@@ -19,7 +19,7 @@ public class Repository<T> : IRepository<T> where T : DomainObject, IAggregateRo
         this.dbSet = _db.Set<T>();
     }
 
-    public Task Add(T entity)
+    public virtual Task Add(T entity)
     {
         dbSet.Add(entity);
 

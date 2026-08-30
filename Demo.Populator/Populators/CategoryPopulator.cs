@@ -13,8 +13,14 @@ public class CategoryPopulator : Populator, ICategoryPopulator
 
     public override async Task Populate()
     {
-        await Mediator.Send(new CategoryCreateCommand("Top Priority"));
-        await Mediator.Send(new CategoryCreateCommand("Important"));
-        await Mediator.Send(new CategoryCreateCommand("Standard"));
+        int productNumber = 1;
+
+        for (int i = 1; i <= 3; i++)
+        {
+            var category = await Mediator.Send(new CategoryCreateCommand($"Category {i}"));
+            await Mediator.Send(new CategoryAddProductCommand(category.Id, $"Product {productNumber++}", productNumber * 1.3m));
+            await Mediator.Send(new CategoryAddProductCommand(category.Id, $"Product {productNumber++}", productNumber * 0.7m));
+            await Mediator.Send(new CategoryAddProductCommand(category.Id, $"Product {productNumber++}", productNumber * 6.3m));
+        }
     }
 }

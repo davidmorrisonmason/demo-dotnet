@@ -1,4 +1,5 @@
 ﻿using Demo.Model.Domain;
+using Demo.Model.Domain.Checkout;
 using Microsoft.EntityFrameworkCore;
 namespace Demo.Infrastructure.Data;
 
@@ -8,6 +9,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Category> Categories { get; set; }
     public DbSet<Product> Products { get; set; }
+    public DbSet<Basket> Baskets { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,12 +37,38 @@ public class ApplicationDbContext : DbContext
         {
             product.ToTable("Products");
 
-            product.HasKey(c => c.Id);
+            product.HasKey(p => p.Id);
 
-            product.Property(c => c.Name)
+            product.Property(p => p.Name)
                 .HasMaxLength(255);
 
-            product.Property(c => c.Price);
+            product.Property(p => p.Price);
         });
+
+        modelBuilder.Entity<BasketItem>(basketItem =>
+        {
+            basketItem.ToTable("BasketItems");
+
+            basketItem.HasKey(b => b.Id);
+
+            basketItem.Property(b => b.ProductId);
+            basketItem.Property(b => b.Quantity);
+
+            basketItem.HasOne(b => b.Product)
+                .WithMany()
+                .HasForeignKey(b => b.ProductId);
+        });
+
+        modelBuilder.Entity<Basket>(basket =>
+        {
+            basket.ToTable("Baskets");
+
+            basket.HasKey(b => b.Id);
+
+            basket.HasMany(b => b.BasketItems)
+                .WithOne()
+                .HasForeignKey(i => i.BasketId);
+        });
+
     }
 }

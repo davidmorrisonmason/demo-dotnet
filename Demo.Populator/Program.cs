@@ -37,6 +37,7 @@ builder.Services.AddValidatorsFromAssembly(typeof(GetCategoriesQuery).Assembly);
 builder.Services.AddValidatorsFromAssembly(typeof(CategoryCreateCommand).Assembly);
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 builder.Services.AddSingleton<IAggregateRootFactory, AggregateRootFactory>();
 
 builder.Services.AddScoped<IPopulationManager, PopulationManager>();
