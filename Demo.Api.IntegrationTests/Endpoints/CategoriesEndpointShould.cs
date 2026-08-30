@@ -6,6 +6,7 @@ namespace Demo.Api.IntegrationTest.Endpoints;
 
 using Demo.DomainServices.Command.Category;
 using Demo.Model.UnitTests;
+using Demo.Model.UnitTests.Builders.Domain;
 using Demo.Model.UnitTests.Validation;
 using System.Net.Http.Json;
 
@@ -169,6 +170,57 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
 
         // Assert
         actual.ShouldBeModelValidationErrorResponse(CategoryCommandErrorType.Category_Name_Must_Be_Unique.BuildErrorMessage());
+    }
+
+    #endregion
+
+    #region AddSubCategory
+
+    [Fact]
+    public async Task AddSubCategory_WhenPostCalled()
+    {
+        // Arrange
+        var category = BuilderFactory.NewCategoryBuilder().BuildAndPersist();
+        var newSubCategoryBuilder = BuilderFactory.NewCategoryBuilder()
+            .With(x => x.Name, "New Subcategory")
+            .With(x => x.ParentCategoryId, category.Id)
+            .WithNextId();
+        var expectedCategory = (BuilderFactory.NewCategoryBuilder().BuildFrom(category) as CategoryBuilder)
+            .WithSubCategories([newSubCategoryBuilder.Build()])
+            .Build();
+
+        // Act
+        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/SubCategories",
+            new CategoryCreateDto { Name = "New Subcategory" });
+
+        // Assert
+        AssertCreatedResponse(response, new List<Category> { expectedCategory }, newSubCategoryBuilder);
+    }
+
+    [Fact]
+    public async Task ReturnValidationError_WhenAddSubCategoryCalledWithInvalidPayload()
+    {
+        // Arrange
+        var category = BuilderFactory.NewCategoryBuilder().BuildAndPersist();
+        var payload = new CategoryCreateDto { Name = "" };
+
+        // Act
+        var actual = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/SubCategories", payload);
+
+        // Assert
+        actual.ShouldBeModelValidationErrorResponse(CategoryCommandErrorType.SubCategory_Name_Required.BuildErrorMessage());
+        AssertCollection(new List<Category> { category });
+    }
+
+    [Fact]
+    public async Task ReturnNotFound_WhenAddSubCategoryCalledForNonExistentCategory()
+    {
+        // Act
+        var actual = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/999/SubCategories",
+            new CategoryCreateDto { Name = "New Subcategory" });
+
+        // Assert
+        actual.ShouldBeNotFoundErrorResponse();
     }
 
     #endregion

@@ -8,7 +8,8 @@ namespace Demo.Model.UnitTests.Builders.Domain
     {
         public CategoryBuilder(BuilderFactory builderFactory, int databaseSeed, int propertySeed) : base(builderFactory, new Category(
             databaseSeed,
-            $"Category {propertySeed}"))
+            $"Category {propertySeed}",
+            null))
         {
         }
 
@@ -25,16 +26,23 @@ namespace Demo.Model.UnitTests.Builders.Domain
             return this;
         }
 
+        public CategoryBuilder WithSubCategories(IEnumerable<Category> subCategories)
+        {
+            Target.SubCategories.Clear();
+
+            foreach (Category category in subCategories)
+            {
+                category.ParentCategoryId = Target.Id;
+                Target.SubCategories.Add(category);
+            }
+
+            return this;
+        }
+
 
         protected override void Persist(ApplicationDbContext applicationDbContext)
         {
             applicationDbContext.Categories.Add(Target);
-            //applicationDbContext.SaveChanges();
-            //Target.Products.ForEach(p =>
-            //{
-            //    p.CategoryId = Target.Id;
-            //    applicationDbContext.Products.Add(p);
-            //});
         }
     }
 }

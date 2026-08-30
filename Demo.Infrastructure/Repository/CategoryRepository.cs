@@ -21,6 +21,7 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
         var query = NonDeletedEntities
             .Include(c => c.Products)
+            .Include(c => c.SubCategories)
             .Where(c => c.Id == id);
 
         return query.FirstOrDefaultAsync();

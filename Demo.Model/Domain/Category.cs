@@ -16,16 +16,23 @@ public class Category : DomainObject, IAggregateRoot
     #region Constructors
 
     public Category(
-        string name) : this(UnsavedID, name)
+        string name) : this(UnsavedID, name, null)
+    {
+    }
+    public Category(
+        string name,
+        int parentCategoryId) : this(UnsavedID, name, parentCategoryId)
     {
     }
 
     [JsonConstructor]
     public Category(
         int id,
-        string name) : base(id)
+        string name,
+        int? parentCategoryId) : base(id)
     {
         Name = name;
+        ParentCategoryId = parentCategoryId;
     }
 
     #endregion
@@ -33,15 +40,29 @@ public class Category : DomainObject, IAggregateRoot
     #region Properties
 
     public string Name { get; set; }
+    public int? ParentCategoryId { get; set; } = null;
 
     public List<Product> Products { get; set; } = [];
+    public List<Category> SubCategories { get; set; } = [];
 
     #endregion
 
     #region Business Logic 
+
     public void Update(string name)
     {
         Name = name;
+    }
+
+    public Category AddSubCategory(string name)
+    {
+        ValidateSubCategoryNameUnique(name);
+
+        var subCategory = new Category(name, Id);
+        subCategory.OnCreated();
+        SubCategories.Add(subCategory);
+
+        return subCategory;
     }
 
     public Product AddProduct(string name, decimal price)
@@ -80,6 +101,14 @@ public class Category : DomainObject, IAggregateRoot
         }
     }
 
+    private void ValidateSubCategoryNameUnique(string name, int? excludeId = null)
+    {
+        if (SubCategories.Any(x => x.Name == name && x.Id != excludeId))
+        {
+            LogMessageAndThrowValidationException(_logger, CategoryErrorType.SubCategory_Name_Must_Be_Unique);
+        }
+    }
+
     #endregion
 
     #region Error Types
@@ -91,6 +120,9 @@ public class Category : DomainObject, IAggregateRoot
 
         [ErrorDescription(ErrorCode = "PRODUCT_NAME_MUST_BE_UNIQUE", ErrorMessage = "Product name must be unique")]
         Product_Name_Must_Be_Unique,
+
+        [ErrorDescription(ErrorCode = "SUBCATEGORY_NAME_MUST_BE_UNIQUE", ErrorMessage = "Subcategory name must be unique")]
+        SubCategory_Name_Must_Be_Unique,
     }
 
     #endregion

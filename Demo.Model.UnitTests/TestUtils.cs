@@ -1,4 +1,5 @@
-﻿using Demo.Model.Domain;
+﻿using Demo.Infrastructure.Data;
+using Demo.Model.Domain;
 using Demo.Model.Domain.Validation;
 using FluentAssertions;
 using FluentAssertions.Equivalency;
@@ -204,6 +205,14 @@ public static class TestUtils
         var actual = dbContext.Set<T>().FirstOrDefault(x => x.Id == expected.Id);
         actual.ShouldBeEquivalentTo(expected);
     }
+
+    public static void ShouldBeInDatabase<T>(this T expected, Func<ApplicationDbContext, IQueryable<T>> selectFunc) where T : DomainObject
+    {
+        using var dbContext = TestContext.DbContext;
+        var actual = selectFunc.Invoke(dbContext).FirstOrDefault(x => x.Id == expected.Id);
+        actual.ShouldBeEquivalentTo(expected);
+    }
+
     public static void ShouldAllBeInDatabase<T>(this IEnumerable<T> expected) where T : DomainObject
     {
         using var dbContext = TestContext.DbContext;

@@ -15,4 +15,7 @@ public enum CategoryCommandErrorType
 
     [ErrorDescription(ErrorCode = "PRODUCT_PRICE_REQUIRED", ErrorMessage = "Product price is required")]
     Product_Price_Required,
+
+    [ErrorDescription(ErrorCode = "SUBCATEGORY_NAME_REQUIRED", ErrorMessage = "Subcategory name is required")]
+    SubCategory_Name_Required,
 }

@@ -14,4 +14,10 @@ public class CategoryDto : EntityDto
 {
     public string Name { get; set; }
     public List<ProductDto> Products { get; set; } = [];
+    public List<SubCategoryDto> SubCategories { get; set; } = [];
+}
+
+public class SubCategoryDto : EntityDto
+{
+    public string Name { get; set; }
 }

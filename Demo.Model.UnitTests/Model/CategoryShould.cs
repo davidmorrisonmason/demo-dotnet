@@ -182,5 +182,50 @@ namespace Demo.Model.UnitTests.Model
             // Assert
             original.ShouldBeEquivalentTo(expected);
         }
+
+        [Fact]
+        public void AddNewSubCategory_When_AddSubCategoryCalled_WithUniqueName()
+        {
+            // Arrange
+            var original = BuilderFactory.NewCategoryBuilder()
+                .With(x => x.SubCategories,
+                [
+                    BuilderFactory.NewCategoryBuilder(1, 1).Build(),
+                    BuilderFactory.NewCategoryBuilder(2, 2).Build(),
+                    BuilderFactory.NewCategoryBuilder(3, 3).Build()
+                ])
+                .Build();
+
+            // Act
+            var actual = original.AddSubCategory("Category 4");
+
+            // Assert
+            actual.Name.ShouldEqual("Category 4");
+            actual.Id.ShouldEqual(0);
+            Assert.Contains(actual, original.SubCategories);
+            original.SubCategories.Count.ShouldEqual(4);
+        }
+
+        [Fact]
+        public void ThrowException_When_AddSubCategoryCalled_WithNonUniqueName()
+        {
+            // Arrange
+            var original = BuilderFactory.NewCategoryBuilder()
+                .With(x => x.SubCategories,
+                [
+                    BuilderFactory.NewCategoryBuilder(1, 1).Build(),
+                    BuilderFactory.NewCategoryBuilder(2, 2).Build(),
+                    BuilderFactory.NewCategoryBuilder(3, 3).Build()
+                ])
+                .Build();
+
+            var expected = Category.CategoryErrorType.SubCategory_Name_Must_Be_Unique.BuildErrorMessage();
+
+            // Act
+            var actual = Assert.Throws<ValidationException>(() => original.AddSubCategory(original.SubCategories[1].Name));
+
+            // Assert
+            actual.ErrorMessages.ShouldBeEquivalentTo([expected]);
+        }
     }
 }

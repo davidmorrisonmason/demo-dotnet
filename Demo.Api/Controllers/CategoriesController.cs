@@ -45,7 +45,15 @@ public class CategoriesController : ApiController
     public async Task<ActionResult<EntityDto>> Post(CategoryCreateDto category)
     {
         var command = new CategoryCreateCommand(category.Name);
-        return await ExecutePostCommand<CategoryCreateCommand, Category>(nameof(Get), command);
+        return await ExecutePostCommand<CategoryCreateCommand, Category>(nameof(Post), command);
+    }
+
+    // POST: api/Categories/5/SubCategories
+    [HttpPost("{id}/SubCategories")]
+    public async Task<ActionResult<EntityDto>> AddSubCategory(int id, CategoryCreateDto category)
+    {
+        var command = new CategoryAddSubCategoryCommand(id, category.Name);
+        return await ExecutePostCommand<CategoryAddSubCategoryCommand, Category>(nameof(Get), command);
     }
 
     // DELETE: api/Categories/5

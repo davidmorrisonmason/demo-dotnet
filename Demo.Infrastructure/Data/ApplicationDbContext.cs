@@ -25,6 +25,10 @@ public class ApplicationDbContext : DbContext
             category.HasMany(c => c.Products)
                 .WithOne()
                 .HasForeignKey(c => c.CategoryId);
+
+            category.HasMany(c => c.SubCategories)
+                .WithOne()
+                .HasForeignKey(c => c.ParentCategoryId);
         });
 
         modelBuilder.Entity<Product>(product =>
