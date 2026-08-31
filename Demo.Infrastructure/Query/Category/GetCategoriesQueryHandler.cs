@@ -18,7 +18,9 @@ public class GetCategoriesQueryHandler : ListQueryHandler<GetCategoriesQuery, Ge
     protected override async Task<IEnumerable<Model.Domain.Category>> DoQuery(GetCategoriesQuery query)
     {
         var categories = await QueryNonDeleted<Model.Domain.Category>()
+            .Where(c => c.ParentCategoryId == null)
             .Include(c => c.Products)
+            .Include(c => c.SubCategories)
             .ToListAsync();
 
         return categories;

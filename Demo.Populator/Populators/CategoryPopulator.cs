@@ -21,6 +21,14 @@ public class CategoryPopulator : Populator, ICategoryPopulator
             await Mediator.Send(new CategoryAddProductCommand(category.Id, $"Product {productNumber++}", productNumber * 1.3m));
             await Mediator.Send(new CategoryAddProductCommand(category.Id, $"Product {productNumber++}", productNumber * 0.7m));
             await Mediator.Send(new CategoryAddProductCommand(category.Id, $"Product {productNumber++}", productNumber * 6.3m));
+
+            for (int s = 1; s <= 2; s++)
+            {
+                var subCategory = await Mediator.Send(new CategoryAddSubCategoryCommand(category.Id, $"Category {i} SubCategory {s}"));
+                await Mediator.Send(new CategoryAddProductCommand(subCategory.Id, $"Product {productNumber++}", productNumber * 1.3m));
+                await Mediator.Send(new CategoryAddProductCommand(subCategory.Id, $"Product {productNumber++}", productNumber * 0.7m));
+                await Mediator.Send(new CategoryAddProductCommand(subCategory.Id, $"Product {productNumber++}", productNumber * 6.3m));
+            }
         }
     }
 }

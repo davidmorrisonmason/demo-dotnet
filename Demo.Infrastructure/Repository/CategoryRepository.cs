@@ -17,21 +17,18 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
         _logger = logger;
     }
 
-    public override Task<Category?> Get(int id)
+    public async override Task<Category?> Get(int id)
     {
-        var query = NonDeletedEntities
-            .Include(c => c.Products)
-            .Include(c => c.SubCategories)
-            .Where(c => c.Id == id);
-
-        return query.FirstOrDefaultAsync();
+        return await BaseQuery
+            .Where(c => c.Id == id)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<Category>> GetAllByName(string name)
     {
         name ??= "";
 
-        return await NonDeletedEntities
+        return await BaseQuery
             .Where(x => x.Name.ToLower() == name.ToLower())
             .ToListAsync();
     }
@@ -40,9 +37,15 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
         name ??= "";
 
-        return await NonDeletedEntities
+        return await BaseQuery
             .Where(x => x.Name.ToLower() == name.ToLower() && x.Id != idToExclude)
             .ToListAsync();
 
     }
+
+    private IQueryable<Category> BaseQuery =>
+        NonDeletedEntities
+            .Include(c => c.Products)
+            .Include(c => c.SubCategories)
+                .ThenInclude(c => c.Products);
 }

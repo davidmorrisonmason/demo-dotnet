@@ -25,7 +25,12 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
         // Arrange
         var categories = new List<Category>
         {
-            BuilderFactory.NewCategoryBuilder(1).BuildAndPersist(),
+            BuilderFactory.NewCategoryBuilder(1)
+                .WithSubCategories(
+                [
+                    BuilderFactory.NewCategoryBuilder(5).Build()
+                ])
+                .BuildAndPersist(),
             BuilderFactory.NewCategoryBuilder(2).BuildAndPersist(),
             BuilderFactory.NewCategoryBuilder(3).BuildAndPersist(),
             BuilderFactory.NewCategoryBuilder(4).With(x => x.IsDeleted, true).BuildAndPersist()

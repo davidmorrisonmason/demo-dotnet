@@ -9,7 +9,14 @@ namespace Demo.Api.IntegrationTests.Builders
         private CategoryDtoBuilder(Category category) : base(new CategoryDto
         {
             Id = category.Id,
-            Name = category.Name
+            Name = category.Name,
+            SubCategories = category.SubCategories
+                .Select(subCategory => new SubCategoryDto
+                {
+                    Id = subCategory.Id,
+                    Name = subCategory.Name
+                })
+                .ToList()
         })
         {
         }

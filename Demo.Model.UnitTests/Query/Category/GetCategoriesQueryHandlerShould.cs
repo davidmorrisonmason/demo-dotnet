@@ -26,13 +26,17 @@ namespace Demo.Model.UnitTests.Query.Category
         {
             // Arrange
             var item1 = BuilderFactory.NewCategoryBuilder(1)
+                .WithSubCategories(
+                [
+                    BuilderFactory.NewCategoryBuilder(2).Build()
+                ])
                 .BuildAndPersist();
 
-            var item2 = BuilderFactory.NewCategoryBuilder(2)
+            var item2 = BuilderFactory.NewCategoryBuilder(3)
                 .With(x => x.IsDeleted, true)
                 .BuildAndPersist();
 
-            var item3 = BuilderFactory.NewCategoryBuilder(3)
+            var item3 = BuilderFactory.NewCategoryBuilder(4)
                 .BuildAndPersist();
 
             List<Domain.Category> expected = new()

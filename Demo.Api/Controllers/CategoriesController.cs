@@ -63,4 +63,12 @@ public class CategoriesController : ApiController
         var command = new CategoryDeleteCommand(id);
         return await ExecuteDeleteCommand<CategoryDeleteCommand, Category>(command);
     }
+
+    // DELETE: api/Categories/5/SubCategories/6
+    [HttpDelete("{id}/SubCategories/{subCategoryId}")]
+    public async Task<IActionResult> RemoveSubCategory(int id, int subCategoryId)
+    {
+        var command = new CategoryRemoveSubCategoryCommand(id, subCategoryId);
+        return await ExecuteDeleteCommand<CategoryRemoveSubCategoryCommand, Category>(command);
+    }
 }

@@ -76,6 +76,14 @@ public class Category : DomainObject, IAggregateRoot
         return product;
     }
 
+    public void RemoveSubCategory(int id)
+    {
+        ValidateSubCategoryExists(id);
+
+        var subCategory = SubCategories.Single(x => x.Id == id);
+        subCategory.OnDeleted();
+    }
+
     public void UpdateProduct(int productId, string newName, decimal newPrice)
     {
         ValidateProductExists(productId);
@@ -90,6 +98,24 @@ public class Category : DomainObject, IAggregateRoot
         if (!Products.Any(x => x.Id == id))
         {
             LogMessageAndThrowEntityNotFoundException(_logger, $"Product with supplied ID '{id}' does not exist");
+        }
+    }
+
+    public void ValidateSubCategoryExists(int id)
+    {
+        if (!SubCategories.Any(x => x.Id == id))
+        {
+            LogMessageAndThrowEntityNotFoundException(_logger, $"Subcategory with supplied ID '{id}' does not exist");
+        }
+    }
+
+    public override void OnDeleted()
+    {
+        base.OnDeleted();
+
+        foreach (var product in Products)
+        {
+            product.OnDeleted();
         }
     }
 
@@ -117,6 +143,9 @@ public class Category : DomainObject, IAggregateRoot
     {
         [ErrorDescription(ErrorCode = "PRODUCT_DOES_NOT_EXIST", ErrorMessage = "Product does not exist")]
         Product_Does_Not_Exist,
+
+        [ErrorDescription(ErrorCode = "SUBCATEGORY_DOES_NOT_EXIST", ErrorMessage = "Subcategory does not exist")]
+        SubCategory_Does_Not_Exist,
 
         [ErrorDescription(ErrorCode = "PRODUCT_NAME_MUST_BE_UNIQUE", ErrorMessage = "Product name must be unique")]
         Product_Name_Must_Be_Unique,

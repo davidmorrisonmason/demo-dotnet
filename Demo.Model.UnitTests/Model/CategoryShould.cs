@@ -227,5 +227,111 @@ namespace Demo.Model.UnitTests.Model
             // Assert
             actual.ErrorMessages.ShouldBeEquivalentTo([expected]);
         }
+
+        [Fact]
+        public void SoftDeleteSubCategoryAndItsProducts_When_RemoveSubCategoryCalled_WithExistingSubCategoryId()
+        {
+            // Arrange
+            var original = BuilderFactory.NewCategoryBuilder()
+                .With(x => x.SubCategories,
+                [
+                    BuilderFactory.NewCategoryBuilder(1, 1)
+                        .With(x => x.Products,
+                        [
+                            BuilderFactory.NewProductBuilder(1, 1).Build(),
+                            BuilderFactory.NewProductBuilder(2, 2).Build()
+                        ])
+                        .Build(),
+                    BuilderFactory.NewCategoryBuilder(2, 2).Build()
+                ])
+                .Build();
+
+            var expected = BuilderFactory.NewCategoryBuilder()
+                .BuildFrom(original)
+                .With(x => x.SubCategories,
+                [
+                    BuilderFactory.NewCategoryBuilder()
+                        .BuildFrom(original.SubCategories[0])
+                        .With(x => x.IsDeleted, true)
+                        .With(x => x.Products,
+                        [
+                            BuilderFactory.NewProductBuilder()
+                                .BuildFrom(original.SubCategories[0].Products[0])
+                                .With(x => x.IsDeleted, true)
+                                .Build(),
+                            BuilderFactory.NewProductBuilder()
+                                .BuildFrom(original.SubCategories[0].Products[1])
+                                .With(x => x.IsDeleted, true)
+                                .Build()
+                        ])
+                        .Build(),
+                    BuilderFactory.NewCategoryBuilder()
+                        .BuildFrom(original.SubCategories[1])
+                        .Build()
+                ])
+                .Build();
+
+            // Act
+            original.RemoveSubCategory(original.SubCategories[0].Id);
+
+            // Assert
+            original.ShouldBeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public void ThrowException_When_RemoveSubCategoryCalled_WithUnknownSubCategoryId()
+        {
+            // Arrange
+            var original = BuilderFactory.NewCategoryBuilder()
+                .With(x => x.SubCategories,
+                [
+                    BuilderFactory.NewCategoryBuilder(1, 1).Build(),
+                    BuilderFactory.NewCategoryBuilder(2, 2).Build()
+                ])
+                .Build();
+
+            var expectedMessage = "Subcategory with supplied ID '999' does not exist";
+
+            // Act
+            var actual = Assert.Throws<EntityNotFoundException>(() => original.RemoveSubCategory(999));
+
+            // Assert
+            actual.Message.ShouldEqual(expectedMessage);
+        }
+
+        [Fact]
+        public void SoftDeleteCategoryAndItsProducts_When_OnDeletedCalled()
+        {
+            // Arrange
+            var original = BuilderFactory.NewCategoryBuilder()
+                .With(x => x.Products,
+                [
+                    BuilderFactory.NewProductBuilder(1, 1).Build(),
+                    BuilderFactory.NewProductBuilder(2, 2).Build()
+                ])
+                .Build();
+
+            var expected = BuilderFactory.NewCategoryBuilder()
+                .BuildFrom(original)
+                .With(x => x.IsDeleted, true)
+                .With(x => x.Products,
+                [
+                    BuilderFactory.NewProductBuilder()
+                        .BuildFrom(original.Products[0])
+                        .With(x => x.IsDeleted, true)
+                        .Build(),
+                    BuilderFactory.NewProductBuilder()
+                        .BuildFrom(original.Products[1])
+                        .With(x => x.IsDeleted, true)
+                        .Build()
+                ])
+                .Build();
+
+            // Act
+            original.OnDeleted();
+
+            // Assert
+            original.ShouldBeEquivalentTo(expected);
+        }
     }
 }
