@@ -1,10 +1,13 @@
 ﻿using Demo.Api.Logging;
+using Demo.DomainServices.Configuration;
 using Demo.DomainServices.Creation;
 using Demo.DomainServices.DependencyInjection;
 using Demo.DomainServices.Interface.Command.Category;
 using Demo.DomainServices.Interface.Query.Category;
 using Demo.DomainServices.Interface.Repository;
+using Demo.DomainServices.Interface.Time;
 using Demo.DomainServices.Interface.Transaction;
+using Demo.DomainServices.Time;
 using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Query.Category;
 using Demo.Infrastructure.Repository;
@@ -19,6 +22,8 @@ using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder(args);
 var configuration = builder.Configuration;
+
+builder.Services.Configure<BasketSettings>(configuration.GetSection(nameof(BasketSettings)));
 
 LoggingUtilities.ConfigureLogging(builder.Services, configuration);
 
@@ -43,8 +48,9 @@ builder.Services.AddSingleton<IAggregateRootFactory, AggregateRootFactory>();
 builder.Services.AddScoped<IPopulationManager, PopulationManager>();
 builder.Services.AddScoped<ICategoryPopulator, CategoryPopulator>();
 
-// Global services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddSingleton<ITimeService, TimeService>();
 
 var provider = builder.Services.BuildServiceProvider();
 
