@@ -7,6 +7,9 @@ using Demo.Model.Validation;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
+using Demo.DomainServices.Context;
+using Demo.DomainServices.Interface.Context;
+
 namespace Demo.DomainServices.Command.Category;
 
 public class CategoryAddSubCategoryCommandHandler : ResultCommandHandler<CategoryAddSubCategoryCommand, CategoryAddSubCategoryCommandValidator, Model.Domain.Category>
@@ -17,7 +20,8 @@ public class CategoryAddSubCategoryCommandHandler : ResultCommandHandler<Categor
         ILogger<CategoryAddSubCategoryCommandHandler> logger,
         ICategoryRepository categoryRepository,
         CategoryAddSubCategoryCommandValidator validator,
-        IUnitOfWork unitOfWork) : base(logger, validator, unitOfWork)
+        IUnitOfWork unitOfWork,
+        IRequestContext requestContext) : base(logger, validator, unitOfWork, requestContext)
     {
         _categoryRepository = categoryRepository;
     }

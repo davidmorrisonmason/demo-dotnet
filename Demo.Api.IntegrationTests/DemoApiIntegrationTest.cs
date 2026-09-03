@@ -24,6 +24,12 @@ public class DemoApiIntegrationTest : DatabaseTest, IClassFixture<WebApplication
                 builder.UseEnvironment("ApiIntegrationTests");
             });
         _httpClient = _factory.CreateClient();
+
+        var client = BuilderFactory.NewClientBuilder()
+            .With(x => x.ApiKey, TestApiKeyHashedText)
+            .BuildAndPersist();
+
+        _httpClient.DefaultRequestHeaders.Add("x-api-key", TestApiKeyPlainText);
     }
 
     protected void AssertCreatedResponse<T>(

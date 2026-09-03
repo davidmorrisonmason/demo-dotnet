@@ -53,6 +53,15 @@ public class DomainObjectBuilder<T> : Builder<T> where T : DomainObject
         return this;
     }
 
+    public virtual DomainObjectBuilder<T> WithMaxId()
+    {
+        using var dbContext = new ApplicationDbContext(DbContextOptions);
+        var set = dbContext.Set<T>();
+        var maxId = set.Any() ? set.Max(x => x.Id) : 0;
+        With(x => x.Id, maxId);
+        return this;
+    }
+
     public virtual T BuildAndPersist()
     {
         using var dbContext = new ApplicationDbContext(DbContextOptions);

@@ -22,14 +22,15 @@ namespace Demo.Model.UnitTests.Command.Category
         public CategoryUpdateProductCommandHandlerShould(DatabaseFixture databaseFixture) : base(databaseFixture)
         {
             var dbContext = new ApplicationDbContext(DbContextOptions);
-            var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>());
+            var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>(), TestRequestContext);
             var aggregateRootFactory = new AggregateRootFactory();
             var unitOfWork = new UnitOfWork(dbContext);
             _commandHandler = new CategoryUpdateProductCommandHandler(
                 Substitute.For<ILogger<CategoryUpdateProductCommandHandler>>(),
                 categoryRepository,
                 new CategoryUpdateProductCommandValidator(categoryRepository),
-                unitOfWork);
+                unitOfWork,
+                TestRequestContext);
         }
 
         [Fact]

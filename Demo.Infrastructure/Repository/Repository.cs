@@ -3,19 +3,23 @@ using Demo.Infrastructure.Data;
 using Demo.Model.Domain;
 using Microsoft.EntityFrameworkCore;
 
+using Demo.DomainServices.Interface.Context;
+
 namespace Demo.Infrastructure.Repository;
 
 public class Repository<T> : IRepository<T> where T : DomainObject, IAggregateRoot
 {
     protected readonly ApplicationDbContext _db;
+    protected IRequestContext RequestContext { get; }
     internal DbSet<T> dbSet;
 
     protected IQueryable<T> NonDeletedEntities => dbSet.AsQueryable()
         .Where(x => !x.IsDeleted);
 
-    public Repository(ApplicationDbContext db)
+    public Repository(ApplicationDbContext db, IRequestContext requestContext)
     {
         _db = db;
+        RequestContext = requestContext;
         this.dbSet = _db.Set<T>();
     }
 

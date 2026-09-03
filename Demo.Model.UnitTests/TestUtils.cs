@@ -21,6 +21,11 @@ public static class TestUtils
         actual.Should().Be(expected);
     }
 
+    public static void ShouldNotEqual<T>(this T? actual, T? expected)
+    {
+        actual.Should().NotBe(expected);
+    }
+
     #endregion
 
     #region Boolean
@@ -40,10 +45,10 @@ public static class TestUtils
 
     public static void ShouldBeEquivalentTo<T>(this T? actual, T? expected) where T : class
     {
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected, null);
     }
 
-    public static void ShouldBeEquivalentTo<T>(this T actual, T expected, Func<EquivalencyOptions<T>, EquivalencyOptions<T>> options = null) where T : class
+    public static void ShouldBeEquivalentTo<T>(this T? actual, T? expected, Func<EquivalencyOptions<T>, EquivalencyOptions<T>>? options = null) where T : class
     {
         // if no explicit options passed in, use a fuzzy datetime match by default
         if (options == null)
@@ -219,6 +224,15 @@ public static class TestUtils
         var expectedIds = expected.Select(x => x.Id);
         var actual = dbContext.Set<T>().Where(x => expectedIds.Contains(x.Id)).ToList();
         actual.ShouldBeEquivalentTo(expected);
+    }
+
+    #endregion
+
+    #region String
+
+    public static void ShouldNotContain(this string actual, string expected)
+    {
+        actual.Should().NotContain(expected);
     }
 
     #endregion

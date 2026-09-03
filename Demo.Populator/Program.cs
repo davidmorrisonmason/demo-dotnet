@@ -1,8 +1,12 @@
 ﻿using Demo.Api.Logging;
 using Demo.DomainServices.Configuration;
+using Demo.DomainServices.Context;
 using Demo.DomainServices.Creation;
 using Demo.DomainServices.DependencyInjection;
+using Demo.DomainServices.Encryption;
 using Demo.DomainServices.Interface.Command.Category;
+using Demo.DomainServices.Interface.Context;
+using Demo.DomainServices.Interface.Encryption;
 using Demo.DomainServices.Interface.Query.Category;
 using Demo.DomainServices.Interface.Repository;
 using Demo.DomainServices.Interface.Time;
@@ -42,15 +46,18 @@ builder.Services.AddValidatorsFromAssembly(typeof(GetCategoriesQuery).Assembly);
 builder.Services.AddValidatorsFromAssembly(typeof(CategoryCreateCommand).Assembly);
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddSingleton<IAggregateRootFactory, AggregateRootFactory>();
 
 builder.Services.AddScoped<IPopulationManager, PopulationManager>();
+builder.Services.AddScoped<IClientPopulator, ClientPopulator>();
 builder.Services.AddScoped<ICategoryPopulator, CategoryPopulator>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddSingleton<ITimeService, TimeService>();
+builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
+builder.Services.AddScoped<IRequestContext, RequestContext>();
 
 var provider = builder.Services.BuildServiceProvider();
 

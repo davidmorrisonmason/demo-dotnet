@@ -22,6 +22,9 @@ namespace Demo.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("ClientId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
@@ -35,50 +38,35 @@ namespace Demo.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClientId");
+
                     b.HasIndex("ParentCategoryId");
 
                     b.ToTable("Categories", (string)null);
                 });
 
-            modelBuilder.Entity("Demo.Model.Domain.Checkout.Basket", b =>
+            modelBuilder.Entity("Demo.Model.Domain.Client", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Baskets", (string)null);
-                });
-
-            modelBuilder.Entity("Demo.Model.Domain.Checkout.BasketItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("BasketId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ApiKey")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BasketId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("BasketItems", (string)null);
+                    b.ToTable("Clients", (string)null);
                 });
 
             modelBuilder.Entity("Demo.Model.Domain.Product", b =>
@@ -110,26 +98,15 @@ namespace Demo.Infrastructure.Migrations
 
             modelBuilder.Entity("Demo.Model.Domain.Category", b =>
                 {
+                    b.HasOne("Demo.Model.Domain.Client", null)
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Demo.Model.Domain.Category", null)
                         .WithMany("SubCategories")
                         .HasForeignKey("ParentCategoryId");
-                });
-
-            modelBuilder.Entity("Demo.Model.Domain.Checkout.BasketItem", b =>
-                {
-                    b.HasOne("Demo.Model.Domain.Checkout.Basket", null)
-                        .WithMany("BasketItems")
-                        .HasForeignKey("BasketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Demo.Model.Domain.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Demo.Model.Domain.Product", b =>
@@ -146,11 +123,6 @@ namespace Demo.Infrastructure.Migrations
                     b.Navigation("Products");
 
                     b.Navigation("SubCategories");
-                });
-
-            modelBuilder.Entity("Demo.Model.Domain.Checkout.Basket", b =>
-                {
-                    b.Navigation("BasketItems");
                 });
 #pragma warning restore 612, 618
         }

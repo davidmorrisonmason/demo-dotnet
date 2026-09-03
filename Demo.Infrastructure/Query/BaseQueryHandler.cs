@@ -5,6 +5,9 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
+using Demo.DomainServices.Context;
+using Demo.DomainServices.Interface.Context;
+
 namespace Demo.Infrastructure.Query;
 
 public abstract class BaseQueryHandler<TQuery, TQueryValidator, TResult> : IDisposable
@@ -16,15 +19,18 @@ public abstract class BaseQueryHandler<TQuery, TQueryValidator, TResult> : IDisp
 
     protected ApplicationDbContext DbContext => _dbContext;
     protected ILogger Logger => _logger;
+    protected IRequestContext RequestContext { get; }
 
     protected BaseQueryHandler(
         ApplicationDbContext dbContext,
         TQueryValidator queryValidator,
-        ILogger logger)
+        ILogger logger,
+        IRequestContext requestContext)
     {
         _dbContext = dbContext;
         _queryValidator = queryValidator;
         _logger = logger;
+        RequestContext = requestContext;
     }
 
     protected IQueryable<T> QueryNonDeleted<T>() where T : DomainObject

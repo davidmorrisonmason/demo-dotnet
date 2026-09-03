@@ -190,9 +190,24 @@ namespace Demo.Model.UnitTests.Model
             var original = BuilderFactory.NewCategoryBuilder()
                 .With(x => x.SubCategories,
                 [
-                    BuilderFactory.NewCategoryBuilder(1, 1).Build(),
-                    BuilderFactory.NewCategoryBuilder(2, 2).Build(),
-                    BuilderFactory.NewCategoryBuilder(3, 3).Build()
+                    BuilderFactory.NewCategoryBuilder(1).Build(),
+                    BuilderFactory.NewCategoryBuilder(2).Build(),
+                    BuilderFactory.NewCategoryBuilder(3).Build()
+                ])
+                .Build();
+
+            var expected = BuilderFactory.NewCategoryBuilder().BuildFrom(original)
+                .With(x => x.SubCategories,
+                [
+                    BuilderFactory.NewCategoryBuilder().BuildFrom(original.SubCategories[0]).Build(),
+                    BuilderFactory.NewCategoryBuilder().BuildFrom(original.SubCategories[1]).Build(),
+                    BuilderFactory.NewCategoryBuilder().BuildFrom(original.SubCategories[2]).Build(),
+                    BuilderFactory.NewCategoryBuilder(4)
+                        .With(x => x.Id, 0)
+                        .With(x => x.ParentCategoryId, original.Id)
+                        .With(x => x.ClientId, original.ClientId)
+                        .With(x => x.Name, "Category 4")
+                        .Build()
                 ])
                 .Build();
 
@@ -200,10 +215,8 @@ namespace Demo.Model.UnitTests.Model
             var actual = original.AddSubCategory("Category 4");
 
             // Assert
-            actual.Name.ShouldEqual("Category 4");
-            actual.Id.ShouldEqual(0);
-            Assert.Contains(actual, original.SubCategories);
-            original.SubCategories.Count.ShouldEqual(4);
+            actual.ShouldBeEquivalentTo(expected.SubCategories[3]);
+            original.ShouldBeEquivalentTo(expected);
         }
 
         [Fact]

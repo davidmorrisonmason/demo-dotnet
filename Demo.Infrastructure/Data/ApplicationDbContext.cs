@@ -1,5 +1,4 @@
 ﻿using Demo.Model.Domain;
-using Demo.Model.Domain.Checkout;
 using Microsoft.EntityFrameworkCore;
 namespace Demo.Infrastructure.Data;
 
@@ -9,7 +8,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Category> Categories { get; set; }
     public DbSet<Product> Products { get; set; }
-    public DbSet<Basket> Baskets { get; set; }
+    public DbSet<Client> Clients { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,6 +22,10 @@ public class ApplicationDbContext : DbContext
 
             category.Property(c => c.Name)
                 .HasMaxLength(255);
+
+            category.HasOne<Client>()
+                .WithMany()
+                .HasForeignKey(c => c.ClientId);
 
             category.HasMany(c => c.Products)
                 .WithOne()
@@ -45,29 +48,17 @@ public class ApplicationDbContext : DbContext
             product.Property(p => p.Price);
         });
 
-        modelBuilder.Entity<BasketItem>(basketItem =>
+        modelBuilder.Entity<Client>(client =>
         {
-            basketItem.ToTable("BasketItems");
+            client.ToTable("Clients");
 
-            basketItem.HasKey(b => b.Id);
+            client.HasKey(c => c.Id);
 
-            basketItem.Property(b => b.ProductId);
-            basketItem.Property(b => b.Quantity);
+            client.Property(c => c.Name)
+                .HasMaxLength(255);
 
-            basketItem.HasOne(b => b.Product)
-                .WithMany()
-                .HasForeignKey(b => b.ProductId);
-        });
-
-        modelBuilder.Entity<Basket>(basket =>
-        {
-            basket.ToTable("Baskets");
-
-            basket.HasKey(b => b.Id);
-
-            basket.HasMany(b => b.BasketItems)
-                .WithOne()
-                .HasForeignKey(i => i.BasketId);
+            client.Property(c => c.ApiKey)
+                .HasMaxLength(255);
         });
 
     }

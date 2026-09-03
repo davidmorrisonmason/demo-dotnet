@@ -16,12 +16,14 @@ public class Category : DomainObject, IAggregateRoot
     #region Constructors
 
     public Category(
-        string name) : this(UnsavedID, name, null)
+        string name,
+        int clientId) : this(UnsavedID, name, clientId, null)
     {
     }
     public Category(
         string name,
-        int parentCategoryId) : this(UnsavedID, name, parentCategoryId)
+        int clientId,
+        int parentCategoryId) : this(UnsavedID, name, clientId, parentCategoryId)
     {
     }
 
@@ -29,9 +31,11 @@ public class Category : DomainObject, IAggregateRoot
     public Category(
         int id,
         string name,
+        int clientId,
         int? parentCategoryId) : base(id)
     {
         Name = name;
+        ClientId = clientId;
         ParentCategoryId = parentCategoryId;
     }
 
@@ -40,6 +44,7 @@ public class Category : DomainObject, IAggregateRoot
     #region Properties
 
     public string Name { get; set; }
+    public int ClientId { get; set; }
     public int? ParentCategoryId { get; set; } = null;
 
     public List<Product> Products { get; set; } = [];
@@ -58,7 +63,7 @@ public class Category : DomainObject, IAggregateRoot
     {
         ValidateSubCategoryNameUnique(name);
 
-        var subCategory = new Category(name, Id);
+        var subCategory = new Category(name, ClientId, Id);
         subCategory.OnCreated();
         SubCategories.Add(subCategory);
 

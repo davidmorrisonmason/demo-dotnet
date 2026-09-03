@@ -1,9 +1,19 @@
 ﻿using Demo.Api.HealthChecks;
 using Demo.Api.Response;
+using Demo.Api.Swagger;
 using Demo.Api.Validation;
+using Demo.DomainServices.Context;
+using Demo.DomainServices.Creation;
 using Demo.DomainServices.DependencyInjection;
+using Demo.DomainServices.Encryption;
+using Demo.DomainServices.Interface.Context;
+using Demo.DomainServices.Interface.Encryption;
+using Demo.DomainServices.Interface.Repository;
+using Demo.DomainServices.Interface.Time;
 using Demo.DomainServices.Interface.Transaction;
+using Demo.DomainServices.Time;
 using Demo.Infrastructure.Data;
+using Demo.Infrastructure.Repository;
 using Demo.Model.Domain.Exceptions;
 using Demo.Model.Domain.Validation;
 using Demo.Model.Logging;
@@ -39,7 +49,12 @@ namespace Demo.Api.Configuration
             services.AddValidatorsFromAssembly(queryAssembly);
             services.AddValidatorsFromAssembly(commandAssembly);
 
-            // Global services
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddSingleton<IAggregateRootFactory, AggregateRootFactory>();
+            services.AddSingleton<ITimeService, TimeService>();
+            services.AddSingleton<IEncryptionService, EncryptionService>();
+            services.AddScoped<IRequestContext, RequestContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddControllers()
@@ -85,6 +100,7 @@ namespace Demo.Api.Configuration
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
+                options.OperationFilter<ApiKeyHeaderOperationFilter>();
                 var xmlFilename = $"{assemblyName}.xml";
                 options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
                 options.EnableAnnotations();
@@ -116,6 +132,10 @@ namespace Demo.Api.Configuration
             app.UseHttpLogging();
 
             app.ConfigureExceptionHandling();
+
+            app.UseWhen(
+                context => context.Request.Path.StartsWithSegments($"/{baseRoute}"),
+                branch => branch.UseMiddleware<Demo.Api.Middleware.ApiKeyMiddleware>());
 
             app.UseHttpsRedirection();
 
