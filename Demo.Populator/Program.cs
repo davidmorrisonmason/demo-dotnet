@@ -1,5 +1,4 @@
 ﻿using Demo.Api.Logging;
-using Demo.DomainServices.Configuration;
 using Demo.DomainServices.Context;
 using Demo.DomainServices.Creation;
 using Demo.DomainServices.DependencyInjection;
@@ -26,8 +25,6 @@ using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder(args);
 var configuration = builder.Configuration;
-
-builder.Services.Configure<BasketSettings>(configuration.GetSection(nameof(BasketSettings)));
 
 LoggingUtilities.ConfigureLogging(builder.Services, configuration);
 
