@@ -33,9 +33,17 @@ namespace Demo.Infrastructure.UnitTests.Builders
         {
             return (BasketBuilder)new BasketBuilder(this, databaseSeed, propertySeed).WithDbContextOptions(_dbContextOptions);
         }
-        public BasketItemBuilder NewBasketItemBuilder(int basketId, int productId, int quantity, int databaseSeed = 0)
+        public BasketItemBuilder NewBasketItemBuilder(int propertySeed = 1, int databaseSeed = 0)
         {
-            return (BasketItemBuilder)new BasketItemBuilder(this, basketId, productId, quantity, databaseSeed).WithDbContextOptions(_dbContextOptions);
+            return (BasketItemBuilder)new BasketItemBuilder(this, propertySeed, databaseSeed).WithDbContextOptions(_dbContextOptions);
+        }
+        public CheckoutCompletionBuilder NewCheckoutCompletionBuilder(int propertySeed = 1, int databaseSeed = 0)
+        {
+            return (CheckoutCompletionBuilder)new CheckoutCompletionBuilder(this, propertySeed, databaseSeed).WithDbContextOptions(_dbContextOptions);
+        }
+        public ClientBuilder NewClientBuilder(int propertySeed = 1, int databaseSeed = 0)
+        {
+            return (ClientBuilder)new ClientBuilder(this, databaseSeed, propertySeed).WithDbContextOptions(_dbContextOptions);
         }
     }
 }

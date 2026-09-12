@@ -1,6 +1,7 @@
 ﻿using Demo.DomainServices.Command.Validation;
 using Demo.DomainServices.Creation;
 using Demo.DomainServices.Interface.Command.Category;
+using Demo.DomainServices.Interface.Context;
 using Demo.DomainServices.Interface.Repository;
 using Demo.DomainServices.Interface.Transaction;
 using FluentValidation;
@@ -18,7 +19,8 @@ public class CategoryCreateCommandHandler : ResultCommandHandler<CategoryCreateC
         CategoryCreateCommandValidator validator,
         ICategoryRepository categoryRepository,
         IAggregateRootFactory aggregateRootFactory,
-        IUnitOfWork unitOfWork) : base(logger, validator, unitOfWork)
+        IUnitOfWork unitOfWork,
+        IRequestContext requestContext) : base(logger, validator, unitOfWork, requestContext)
     {
         _categoryRepository = categoryRepository;
         _aggregateRootFactory = aggregateRootFactory;
@@ -26,7 +28,7 @@ public class CategoryCreateCommandHandler : ResultCommandHandler<CategoryCreateC
 
     protected override async Task<Model.Domain.Category> Execute(CategoryCreateCommand request, CancellationToken cancellationToken)
     {
-        var category = _aggregateRootFactory.NewCategory(request.Name);
+        var category = _aggregateRootFactory.NewCategory(request.Name, RequestContext.ClientId);
 
         await _categoryRepository.Add(category);
 

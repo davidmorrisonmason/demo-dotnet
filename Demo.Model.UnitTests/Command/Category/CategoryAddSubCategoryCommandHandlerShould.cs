@@ -21,12 +21,13 @@ namespace Demo.Model.UnitTests.Command.Category
         public CategoryAddSubCategoryCommandHandlerShould(DatabaseFixture databaseFixture) : base(databaseFixture)
         {
             var dbContext = new ApplicationDbContext(DbContextOptions);
-            var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>());
+            var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>(), TestRequestContext);
             _commandHandler = new CategoryAddSubCategoryCommandHandler(
                 Substitute.For<ILogger<CategoryAddSubCategoryCommandHandler>>(),
                 categoryRepository,
                 new CategoryAddSubCategoryCommandValidator(categoryRepository),
-                new UnitOfWork(dbContext));
+                new UnitOfWork(dbContext),
+                TestRequestContext);
         }
 
         [Fact]

@@ -2,13 +2,8 @@ using Demo.Api.Configuration;
 using Demo.Api.Logging;
 using Demo.DomainServices.Command.Category;
 using Demo.DomainServices.Configuration;
-using Demo.DomainServices.Creation;
-using Demo.DomainServices.Interface.Repository;
-using Demo.DomainServices.Interface.Time;
-using Demo.DomainServices.Time;
 using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Query.Category;
-using Demo.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -27,10 +22,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IBasketRepository, BasketRepository>();
-builder.Services.AddSingleton<IAggregateRootFactory, AggregateRootFactory>();
-builder.Services.AddSingleton<ITimeService, TimeService>();
 
 var app = builder.Build();
 

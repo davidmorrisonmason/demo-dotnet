@@ -50,4 +50,21 @@ public class BasketsController : ApiController
 
         return await ExecutePostCommand<BasketCreateCommand, Basket>(nameof(Post), command);
     }
+
+    // POST: api/Baskets/5/Complete
+    [HttpPut("{id}/Complete")]
+    public async Task<ActionResult> Complete(int id, CheckoutCompleteDto checkout)
+    {
+        var command = new CheckoutCompleteCommand(
+            id,
+            checkout.Recipient,
+            checkout.AddressLine1,
+            checkout.AddressLine2,
+            checkout.AddressLine3,
+            checkout.AddressLine4,
+            checkout.City,
+            checkout.PostCode);
+
+        return await ExecutePutCommand<CheckoutCompleteCommand, CheckoutCompletion>(command);
+    }
 }

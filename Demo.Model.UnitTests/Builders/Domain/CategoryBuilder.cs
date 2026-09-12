@@ -9,8 +9,11 @@ namespace Demo.Model.UnitTests.Builders.Domain
         public CategoryBuilder(BuilderFactory builderFactory, int databaseSeed, int propertySeed) : base(builderFactory, new Category(
             databaseSeed,
             $"Category {propertySeed}",
+            propertySeed,
             null))
         {
+            // autoseed client ID with the client associated with DatabaseTest so that we don't need to litter the code with client ID
+            With(c => c.ClientId, DatabaseTest.TestClientId);
         }
 
         public CategoryBuilder WithProducts(IEnumerable<Product> products)

@@ -1,5 +1,6 @@
 using Demo.DomainServices.Command.Validation;
 using Demo.DomainServices.Interface.Command.Checkout;
+using Demo.DomainServices.Interface.Context;
 using Demo.DomainServices.Interface.Repository;
 using Demo.DomainServices.Interface.Transaction;
 using Demo.Model.Domain.Checkout;
@@ -20,7 +21,8 @@ public class BasketAddItemsCommandHandler : CommandHandler<BasketAddItemsCommand
         BasketAddItemsCommandValidator validator,
         ICategoryRepository categoryRepository,
         IBasketRepository basketRepository,
-        IUnitOfWork unitOfWork) : base(logger, validator, unitOfWork)
+        IUnitOfWork unitOfWork,
+        IRequestContext requestContext) : base(logger, validator, unitOfWork, requestContext)
     {
         _categoryRepository = categoryRepository;
         _basketRepository = basketRepository;

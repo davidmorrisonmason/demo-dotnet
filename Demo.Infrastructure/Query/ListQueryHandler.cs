@@ -6,6 +6,9 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
+using Demo.DomainServices.Context;
+using Demo.DomainServices.Interface.Context;
+
 namespace Demo.Infrastructure.Query;
 
 /// <summary>
@@ -22,7 +25,8 @@ public abstract class ListQueryHandler<TQuery, TQueryValidator, TEntity> : BaseQ
     public ListQueryHandler(
         ApplicationDbContext dbContext,
         TQueryValidator queryValidator,
-        ILogger logger) : base(dbContext, queryValidator, logger)
+        ILogger logger,
+        IRequestContext requestContext) : base(dbContext, queryValidator, logger, requestContext)
     {
     }
 

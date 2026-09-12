@@ -1,6 +1,7 @@
 using Demo.DomainServices.Command.Checkout;
 using Demo.DomainServices.Interface.Command.Checkout;
 using Demo.DomainServices.Interface.Repository;
+using Demo.DomainServices.Interface.Time;
 using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Repository;
 using Demo.Model.Domain.Validation;
@@ -21,8 +22,8 @@ public class BasketAddItemsCommandHandlerShould : CommandTest
     public BasketAddItemsCommandHandlerShould(DatabaseFixture databaseFixture) : base(databaseFixture)
     {
         var dbContext = new ApplicationDbContext(DbContextOptions);
-        var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>());
-        var basketRepository = new BasketRepository(dbContext);
+        var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>(), TestRequestContext);
+        var basketRepository = new BasketRepository(dbContext, TestRequestContext, Substitute.For<ITimeService>());
         var unitOfWork = new UnitOfWork(dbContext);
 
         _commandHandler = new BasketAddItemsCommandHandler(
@@ -30,7 +31,8 @@ public class BasketAddItemsCommandHandlerShould : CommandTest
             new BasketAddItemsCommandValidator(),
             categoryRepository,
             basketRepository,
-            unitOfWork);
+            unitOfWork,
+            TestRequestContext);
     }
 
     [Fact]
@@ -48,18 +50,21 @@ public class BasketAddItemsCommandHandlerShould : CommandTest
         var basket = BuilderFactory.NewBasketBuilder()
             .WithBasketItems(
             [
-                BuilderFactory.NewBasketItemBuilder(0, category.Products[0].Id, 1, 1).Build()
+                BuilderFactory.NewBasketItemBuilder()
+                    .With(x => x.ProductId, category.Products[0].Id)
+                    .Build()
             ])
             .BuildAndPersist();
 
         var expected = ((BasketBuilder)BuilderFactory.NewBasketBuilder().BuildFrom(basket))
             .WithBasketItems(
             [
-                BuilderFactory.NewBasketItemBuilder(basket.Id, category.Products[0].Id, 1, 1)
-                    .With(x => x.Id, basket.BasketItems[0].Id)
+                BuilderFactory.NewBasketItemBuilder().BuildFrom(basket.BasketItems[0])
                     .Build(),
-                BuilderFactory.NewBasketItemBuilder(basket.Id, category.Products[1].Id, 2, 2)
+                BuilderFactory.NewBasketItemBuilder()
                     .WithNextId()
+                    .With(x => x.ProductId, category.Products[1].Id)
+                    .With(x => x.Quantity, 2)
                     .Build()
             ])
             .Build();
@@ -86,15 +91,17 @@ public class BasketAddItemsCommandHandlerShould : CommandTest
         var basket = BuilderFactory.NewBasketBuilder()
             .WithBasketItems(
             [
-                BuilderFactory.NewBasketItemBuilder(0, category.Products[0].Id, 1).Build()
+                BuilderFactory.NewBasketItemBuilder()
+                    .With(x => x.ProductId, category.Products[0].Id)
+                    .Build()
             ])
             .BuildAndPersist();
 
         var expected = ((BasketBuilder)BuilderFactory.NewBasketBuilder().BuildFrom(basket))
             .WithBasketItems(
             [
-                BuilderFactory.NewBasketItemBuilder(basket.Id, category.Products[0].Id, 3)
-                    .With(x => x.Id, basket.BasketItems[0].Id)
+                BuilderFactory.NewBasketItemBuilder().BuildFrom(basket.BasketItems[0])
+                    .With(x => x.Quantity, 3)
                     .Build()
              ])
             .Build();

@@ -14,7 +14,8 @@ namespace Demo.Model.UnitTests.Query.Category
             return new GetCategoriesQueryHandler(
                 new ApplicationDbContext(DbContextOptions),
                 new GetCategoriesQueryValidator(),
-                Substitute.For<ILogger<GetCategoriesQueryHandler>>());
+                Substitute.For<ILogger<GetCategoriesQueryHandler>>(),
+                TestRequestContext);
         }
 
         public GetCategoriesQueryHandlerShould(DatabaseFixture databaseFixture) : base(databaseFixture)
@@ -50,7 +51,6 @@ namespace Demo.Model.UnitTests.Query.Category
             };
 
             // Act
-
             using var queryHandler = NewQueryHandler();
             var actual = await queryHandler.Handle(new GetCategoriesQuery(), CancellationToken.None);
 

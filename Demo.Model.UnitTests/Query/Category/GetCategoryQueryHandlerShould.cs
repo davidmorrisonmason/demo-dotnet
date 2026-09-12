@@ -18,7 +18,8 @@ namespace Demo.Model.UnitTests.Query.Category
             return new GetCategoryQueryHandler(
                 new ApplicationDbContext(DbContextOptions),
                 new GetCategoryQueryValidator(),
-                Substitute.For<ILogger<GetCategoryQueryHandler>>());
+                Substitute.For<ILogger<GetCategoryQueryHandler>>(),
+                TestRequestContext);
         }
 
         [Fact]

@@ -1,4 +1,5 @@
-﻿using Demo.DomainServices.Interface.Query.Category;
+﻿using Demo.DomainServices.Interface.Context;
+using Demo.DomainServices.Interface.Query.Category;
 using Demo.Infrastructure.Data;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -11,13 +12,14 @@ public class GetCategoryQueryHandler : SingleQueryHandler<GetCategoryQuery, GetC
     public GetCategoryQueryHandler(
         ApplicationDbContext dbContext,
         GetCategoryQueryValidator queryValidator,
-        ILogger<GetCategoryQueryHandler> logger) : base(dbContext, queryValidator, logger)
+        ILogger<GetCategoryQueryHandler> logger,
+        IRequestContext requestContext) : base(dbContext, queryValidator, logger, requestContext)
     {
     }
 
     protected override async Task<Model.Domain.Category?> DoQuery(GetCategoryQuery query)
     {
-        var category = await QueryNonDeleted<Model.Domain.Category>()
+        var category = await BaseQuery
             .Include(c => c.Products)
             .Include(c => c.SubCategories)
             .Where(x => x.Id == query.Id)
@@ -25,6 +27,10 @@ public class GetCategoryQueryHandler : SingleQueryHandler<GetCategoryQuery, GetC
 
         return category;
     }
+
+    protected IQueryable<Model.Domain.Category> BaseQuery =>
+        QueryNonDeleted<Model.Domain.Category>()
+        .Where(c => c.ClientId == RequestContext.ClientId);
 
     protected override dynamic ToLogObject(GetCategoryQuery query)
     {

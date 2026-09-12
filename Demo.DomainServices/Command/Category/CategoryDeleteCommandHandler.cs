@@ -5,6 +5,9 @@ using Demo.Model.Validation;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
+using Demo.DomainServices.Context;
+using Demo.DomainServices.Interface.Context;
+
 namespace Demo.DomainServices.Command.Category;
 
 public class CategoryDeleteCommandHandler : CommandHandler<CategoryDeleteCommand, CategoryDeleteCommandValidator>
@@ -15,7 +18,8 @@ public class CategoryDeleteCommandHandler : CommandHandler<CategoryDeleteCommand
         ILogger<CategoryDeleteCommandHandler> logger,
         ICategoryRepository categoryRepository,
         CategoryDeleteCommandValidator validator,
-        IUnitOfWork unitOfWork) : base(logger, validator, unitOfWork)
+        IUnitOfWork unitOfWork,
+        IRequestContext requestContext) : base(logger, validator, unitOfWork, requestContext)
     {
         _categoryRepository = categoryRepository;
     }

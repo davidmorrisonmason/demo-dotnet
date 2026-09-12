@@ -1,11 +1,17 @@
 using Demo.DomainServices.Command.Validation;
+using Demo.DomainServices.Configuration;
 using Demo.DomainServices.Interface.Command.Checkout;
 using Demo.DomainServices.Interface.Repository;
+using Demo.DomainServices.Interface.Time;
 using Demo.DomainServices.Interface.Transaction;
 using Demo.Model.Domain.Checkout;
 using FluentValidation;
 using Mapster;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+using Demo.DomainServices.Context;
+using Demo.DomainServices.Interface.Context;
 
 namespace Demo.DomainServices.Command.Checkout;
 
@@ -13,16 +19,23 @@ public class BasketCreateCommandHandler : ResultCommandHandler<BasketCreateComma
 {
     private readonly ICategoryRepository _categoryRepository;
     private readonly IBasketRepository _basketRepository;
+    private readonly ITimeService _timeService;
+    private readonly BasketSettings _basketSettings;
 
     public BasketCreateCommandHandler(
         ILogger<BasketCreateCommandHandler> logger,
         BasketCreateCommandValidator validator,
         ICategoryRepository categoryRepository,
         IBasketRepository basketRepository,
-        IUnitOfWork unitOfWork) : base(logger, validator, unitOfWork)
+        IUnitOfWork unitOfWork,
+        ITimeService timeService,
+        IOptions<BasketSettings> basketSettings,
+        IRequestContext requestContext) : base(logger, validator, unitOfWork, requestContext)
     {
         _categoryRepository = categoryRepository;
         _basketRepository = basketRepository;
+        _timeService = timeService;
+        _basketSettings = basketSettings.Value;
     }
 
     protected override async Task<Basket> Execute(BasketCreateCommand command, CancellationToken cancellationToken)
@@ -31,7 +44,8 @@ public class BasketCreateCommandHandler : ResultCommandHandler<BasketCreateComma
             _categoryRepository,
             command.BasketItems);
 
-        var basket = new Basket(command.BasketItems.Adapt<List<BasketItem>>());
+        var basketExpirationTime = _timeService.UtcNow.AddMinutes(_basketSettings.BasketExpirationMinutes);
+        var basket = new Basket(basketExpirationTime, command.BasketItems.Adapt<List<BasketItem>>());
         basket.OnCreated();
 
         await _basketRepository.Add(basket);
