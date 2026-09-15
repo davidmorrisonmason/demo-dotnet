@@ -1,5 +1,4 @@
 ﻿using Demo.Infrastructure.Data;
-using Demo.Infrastructure.UnitTests.Builders;
 using Demo.Model.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -15,7 +14,7 @@ public class DomainObjectBuilder<T> : Builder<T> where T : DomainObject
         BuilderFactory = builderFactory;
     }
 
-    protected DbContextOptions<ApplicationDbContext> DbContextOptions { get; private set; }
+    protected DbContextOptions<ApplicationDbContext>? DbContextOptions { get; private set; }
 
     public Builder<T> WithDbContextOptions(DbContextOptions<ApplicationDbContext> dbContextOptions)
     {
@@ -46,6 +45,7 @@ public class DomainObjectBuilder<T> : Builder<T> where T : DomainObject
 
     public virtual DomainObjectBuilder<T> WithNextId(int additionalToAdd = 1)
     {
+        ArgumentNullException.ThrowIfNull(DbContextOptions, nameof(DbContextOptions));
         using var dbContext = new ApplicationDbContext(DbContextOptions);
         var set = dbContext.Set<T>();
         var maxId = set.Any() ? set.Max(x => x.Id) : 0;
@@ -53,8 +53,19 @@ public class DomainObjectBuilder<T> : Builder<T> where T : DomainObject
         return this;
     }
 
+    public virtual DomainObjectBuilder<T> WithMaxId()
+    {
+        ArgumentNullException.ThrowIfNull(DbContextOptions, nameof(DbContextOptions));
+        using var dbContext = new ApplicationDbContext(DbContextOptions);
+        var set = dbContext.Set<T>();
+        var maxId = set.Any() ? set.Max(x => x.Id) : 0;
+        With(x => x.Id, maxId);
+        return this;
+    }
+
     public virtual T BuildAndPersist()
     {
+        ArgumentNullException.ThrowIfNull(DbContextOptions, nameof(DbContextOptions));
         using var dbContext = new ApplicationDbContext(DbContextOptions);
         Persist(dbContext);
         dbContext.SaveChanges();

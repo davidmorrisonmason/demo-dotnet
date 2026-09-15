@@ -6,7 +6,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Query.Category
 {
-    [Collection(DatabaseTestCollection.Name)]
+    [Collection(ModelTestsDatabaseTestCollection.Name)]
     public class GetCategoryQueryHandlerShould : QueryTest
     {
         public GetCategoryQueryHandlerShould(DatabaseFixture databaseFixture) : base(databaseFixture)
@@ -18,7 +18,8 @@ namespace Demo.Model.UnitTests.Query.Category
             return new GetCategoryQueryHandler(
                 new ApplicationDbContext(DbContextOptions),
                 new GetCategoryQueryValidator(),
-                Substitute.For<ILogger<GetCategoryQueryHandler>>());
+                Substitute.For<ILogger<GetCategoryQueryHandler>>(),
+                TestRequestContext);
         }
 
         [Fact]

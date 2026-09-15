@@ -1,4 +1,5 @@
-﻿using Demo.DomainServices.Interface.Repository;
+﻿using Demo.DomainServices.Interface.Context;
+using Demo.DomainServices.Interface.Repository;
 using Demo.Infrastructure.Data;
 using Demo.Model.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,8 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
 
     public CategoryRepository(
         ApplicationDbContext dbContext,
-        ILogger<ICategoryRepository> logger) : base(dbContext)
+        ILogger<ICategoryRepository> logger,
+        IRequestContext requestContext) : base(dbContext, requestContext)
     {
         _logger = logger;
     }
@@ -29,7 +31,7 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
         name ??= "";
 
         return await BaseQuery
-            .Where(x => x.Name.ToLower() == name.ToLower())
+            .Where(x => x.Name == name)
             .ToListAsync();
     }
 
@@ -38,13 +40,14 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
         name ??= "";
 
         return await BaseQuery
-            .Where(x => x.Name.ToLower() == name.ToLower() && x.Id != idToExclude)
+            .Where(x => x.Name == name && x.Id != idToExclude)
             .ToListAsync();
 
     }
 
     private IQueryable<Category> BaseQuery =>
         NonDeletedEntities
+            .Where(c => c.ClientId == RequestContext.ClientId)
             .Include(c => c.Products)
             .Include(c => c.SubCategories)
                 .ThenInclude(c => c.Products);

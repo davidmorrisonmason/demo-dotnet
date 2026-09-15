@@ -30,10 +30,10 @@ public class BasketsController : ApiController
     {
         var command = new BasketAddItemsCommand(
             id,
-            basket.BasketItems.Select(item => new BasketItemCommand(
+            [.. basket.BasketItems.Select(item => new BasketItemCommand(
                 item.CategoryId,
                 item.ProductId,
-                item.Quantity)).ToList());
+                item.Quantity))]);
 
         return await ExecutePutCommand<BasketAddItemsCommand, Basket>(command);
     }
@@ -43,11 +43,28 @@ public class BasketsController : ApiController
     public async Task<ActionResult<BasketDto>> Post(BasketCreateDto basket)
     {
         var command = new BasketCreateCommand(
-            basket.BasketItems.Select(item => new BasketItemCommand(
+            [.. basket.BasketItems.Select(item => new BasketItemCommand(
                 item.CategoryId,
                 item.ProductId,
-                item.Quantity)).ToList());
+                item.Quantity))]);
 
         return await ExecutePostCommand<BasketCreateCommand, Basket>(nameof(Post), command);
+    }
+
+    // POST: api/Baskets/5/Complete
+    [HttpPut("{id}/Complete")]
+    public async Task<ActionResult> Complete(int id, CheckoutCompleteDto checkout)
+    {
+        var command = new CheckoutCompleteCommand(
+            id,
+            checkout.Recipient,
+            checkout.AddressLine1,
+            checkout.AddressLine2,
+            checkout.AddressLine3,
+            checkout.AddressLine4,
+            checkout.City,
+            checkout.PostCode);
+
+        return await ExecutePutCommand<CheckoutCompleteCommand, CheckoutCompletion>(command);
     }
 }

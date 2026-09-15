@@ -1,4 +1,5 @@
 using Demo.Api.Dto;
+using Demo.Model.Domain.Checkout;
 using Demo.Model.UnitTests;
 using Demo.Model.UnitTests.Builders.Domain;
 using Demo.Model.UnitTests.Database;
@@ -6,12 +7,12 @@ using Demo.Model.UnitTests.Validation;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Json;
 
-namespace Demo.Api.IntegrationTest.Endpoints;
+namespace Demo.Api.IntegrationTests.Endpoints;
 
-[Collection(DatabaseTestCollection.Name)]
+[Collection(ModelTestsDatabaseTestCollection.Name)]
 public class BasketsEndpointShould : DemoApiIntegrationTest
 {
-    public BasketsEndpointShould(DatabaseFixture databaseFixture) : base(databaseFixture)
+    public BasketsEndpointShould(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)
     {
     }
 
@@ -39,21 +40,23 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
             ]
         };
 
-        var basketBuilder
-            = (BasketBuilder)(BuilderFactory.NewBasketBuilder().WithNextId());
-        var basketId = basketBuilder.Build().Id;
+        var now = DateTime.UtcNow;
 
-        var expected = basketBuilder
+        var expected = ((BasketBuilder)BuilderFactory.NewBasketBuilder()
+            .WithNextId())
             .WithBasketItems(
             [
-                BuilderFactory.NewBasketItemBuilder(basketId, category.Products[0].Id, 2)
+                BuilderFactory.NewBasketItemBuilder()
                    .WithNextId()
+                   .With(x => x.ProductId, category.Products[0].Id)
+                   .With(x => x.Quantity, 2)
                    .Build()
             ])
+            .With(x => x.BasketExpirationTime, now.AddHours(1))
             .Build();
 
         // Act
-        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Baskets", payload);
+        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Baskets", payload, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
 
@@ -75,19 +78,26 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
         var basket = BuilderFactory.NewBasketBuilder()
             .WithBasketItems(
             [
-                BuilderFactory.NewBasketItemBuilder(0, category.Products[0].Id, 1, 1).Build()
+                BuilderFactory.NewBasketItemBuilder()
+                   .WithNextId()
+                   .With(x => x.ProductId, category.Products[0].Id)
+                   .With(x => x.Quantity, 1)
+                   .Build()
             ])
             .BuildAndPersist();
 
         var expected = ((BasketBuilder)BuilderFactory.NewBasketBuilder().BuildFrom(basket))
             .WithBasketItems(
             [
-                BuilderFactory.NewBasketItemBuilder(basket.Id, category.Products[0].Id, 3, 1)
-                    .With(x => x.Id, basket.BasketItems[0].Id)
-                    .Build(),
-                BuilderFactory.NewBasketItemBuilder(basket.Id, category.Products[1].Id, 3, 2)
-                    .WithNextId()
-                    .Build()
+                BuilderFactory.NewBasketItemBuilder()
+                   .BuildFrom(basket.BasketItems[0])
+                   .With(x => x.Quantity, 3)
+                   .Build(),
+                BuilderFactory.NewBasketItemBuilder()
+                   .WithNextId()
+                   .With(x => x.ProductId, category.Products[1].Id)
+                   .With(x => x.Quantity, 3)
+                   .Build()
             ])
             .Build();
 
@@ -111,11 +121,52 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
         };
 
         // Act
-        var response = await Client.PutAsJsonAsync($"{BaseUrl}/Baskets/{basket.Id}", payload);
+        var response = await Client.PutAsJsonAsync($"{BaseUrl}/Baskets/{basket.Id}", payload, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         response.ShouldBeNoContentResponse();
         expected.ShouldBeInDatabase(query => query.Baskets.Include(item => item.BasketItems));
+    }
+
+    [Fact]
+    public async Task CompleteBasket_WhenPostCompleteCalled()
+    {
+        // Arrange
+        var basket = BuilderFactory.NewBasketBuilder().BuildAndPersist();
+        var payload = new CheckoutCompleteDto
+        {
+            Recipient = "Recipient",
+            AddressLine1 = "Address line 1",
+            AddressLine2 = "Address line 2",
+            AddressLine3 = "Address line 3",
+            AddressLine4 = "Address line 4",
+            City = "City",
+            PostCode = "Post code"
+        };
+
+        var expectedBasket = BuilderFactory.NewBasketBuilder()
+            .BuildFrom(basket)
+            .With(x => x.Status, BasketStatus.Complete)
+            .Build();
+
+        var expected = BuilderFactory.NewCheckoutCompletionBuilder()
+            .WithBasket(expectedBasket)
+            .WithNextId()
+            .With(x => x.Recipient, payload.Recipient)
+            .With(x => x.AddressLine1, payload.AddressLine1)
+            .With(x => x.AddressLine2, payload.AddressLine2)
+            .With(x => x.AddressLine3, payload.AddressLine3)
+            .With(x => x.AddressLine4, payload.AddressLine4)
+            .With(x => x.City, payload.City)
+            .With(x => x.PostCode, payload.PostCode)
+            .Build();
+
+        // Act
+        var response = await Client.PutAsJsonAsync($"{BaseUrl}/Baskets/{basket.Id}/Complete", payload, cancellationToken: Xunit.TestContext.Current.CancellationToken);
+
+        // Assert
+        response.ShouldBeNoContentResponse();
+        expected.ShouldBeInDatabase(query => query.CheckoutCompletions.Include(completion => completion.Basket));
     }
 
     [Fact]
@@ -128,16 +179,24 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
                 BuilderFactory.NewProductBuilder(1).Build()
             ])
             .BuildAndPersist();
+
         var basket = BuilderFactory.NewBasketBuilder()
             .WithBasketItems(
             [
-                BuilderFactory.NewBasketItemBuilder(0, category.Products[0].Id, 2, 1).Build()
+                BuilderFactory.NewBasketItemBuilder()
+                   .WithNextId()
+                   .With(x => x.ProductId, category.Products[0].Id)
+                   .With(x => x.Quantity, 2)
+                   .Build()
             ])
             .BuildAndPersist();
+
 
         var expected = new BasketDto
         {
             Id = basket.Id,
+            BasketExpirationTime = basket.BasketExpirationTime,
+            TotalPrice = 20,
             BasketItems =
             [
                 new BasketItemDto
@@ -156,7 +215,7 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
         };
 
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/Baskets/{basket.Id}");
+        var response = await Client.GetAsync($"{BaseUrl}/Baskets/{basket.Id}", Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         response.ShouldBeOkResponse(expected);
@@ -166,7 +225,7 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
     public async Task ReturnNotFound_WhenGetByIdCalledForNonExistentBasket()
     {
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/Baskets/999");
+        var response = await Client.GetAsync($"{BaseUrl}/Baskets/999", Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         response.ShouldBeNotFoundErrorResponse();
@@ -176,9 +235,7 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
     public async Task ReturnValidationError_WhenPostCalledWithEmptyBasketItems()
     {
         // Act
-        var response = await Client.PostAsJsonAsync(
-            $"{BaseUrl}/Baskets",
-            new BasketCreateDto());
+        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Baskets", new BasketCreateDto(), cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         response.ShouldBeModelValidationErrorResponse(

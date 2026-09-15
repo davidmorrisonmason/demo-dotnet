@@ -1,5 +1,6 @@
 ﻿namespace Demo.Model.Validation;
 
+[AttributeUsage(AttributeTargets.All)]
 public class ErrorDescriptionAttribute : Attribute
 {
     public required string ErrorCode { get; set; }
@@ -19,7 +20,7 @@ public static class ErrorDescriptionAttributeUtils
         return description == null ? errorType.ToString() : description.ErrorMessage;
     }
 
-    private static ErrorDescriptionAttribute GetErrorDescriptionAttribute<T>(T errorCode) where T : Enum
+    private static ErrorDescriptionAttribute? GetErrorDescriptionAttribute<T>(T errorCode) where T : Enum
     {
         try
         {

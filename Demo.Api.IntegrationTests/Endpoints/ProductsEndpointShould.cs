@@ -2,17 +2,16 @@ using Demo.Api.Dto;
 using Demo.DomainServices.Command.Category;
 using Demo.Model.Domain;
 using Demo.Model.UnitTests;
-using Demo.Model.UnitTests.Builders.Domain;
 using Demo.Model.UnitTests.Database;
 using Demo.Model.UnitTests.Validation;
 using System.Net.Http.Json;
 
-namespace Demo.Api.IntegrationTest.Endpoints;
+namespace Demo.Api.IntegrationTests.Endpoints;
 
-[Collection(DatabaseTestCollection.Name)]
+[Collection(ModelTestsDatabaseTestCollection.Name)]
 public class ProductsEndpointShould : DemoApiIntegrationTest
 {
-    public ProductsEndpointShould(DatabaseFixture databaseFixture) : base(databaseFixture)
+    public ProductsEndpointShould(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)
     {
     }
 
@@ -33,8 +32,7 @@ public class ProductsEndpointShould : DemoApiIntegrationTest
             .ToList();
 
         // Act
-        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/Products",
-            new ProductCreateDto { Name = "New Product", Price = 252.4m });
+        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/Products", new ProductCreateDto { Name = "New Product", Price = 252.4m }, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         AssertCreatedResponse(response, expected, newProductBuilder);
@@ -50,8 +48,7 @@ public class ProductsEndpointShould : DemoApiIntegrationTest
             .ToList();
 
         // Act
-        var actual = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/Products",
-            new ProductCreateDto { Name = "New Product", Price = 0 });
+        var actual = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/Products", new ProductCreateDto { Name = "New Product", Price = 0 }, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         actual.ShouldBeModelValidationErrorResponse(CategoryCommandErrorType.Product_Price_Required.BuildErrorMessage());
@@ -80,8 +77,7 @@ public class ProductsEndpointShould : DemoApiIntegrationTest
         };
 
         // Act
-        var response = await Client.PutAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/Products/{updatedProduct.Id}",
-            new ProductUpdateDto { Name = updatedProduct.Name, Price = updatedProduct.Price });
+        var response = await Client.PutAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/Products/{updatedProduct.Id}", new ProductUpdateDto { Name = updatedProduct.Name, Price = updatedProduct.Price }, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         AssertUpdatedResponse(response, expected);
@@ -97,8 +93,7 @@ public class ProductsEndpointShould : DemoApiIntegrationTest
             .ToList();
 
         // Act
-        var actual = await Client.PutAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/Products/{category.Products[1].Id}",
-            new ProductUpdateDto { Name = "Updated Product", Price = 0 });
+        var actual = await Client.PutAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/Products/{category.Products[1].Id}", new ProductUpdateDto { Name = "Updated Product", Price = 0 }, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         actual.ShouldBeModelValidationErrorResponse(CategoryCommandErrorType.Product_Price_Required.BuildErrorMessage());

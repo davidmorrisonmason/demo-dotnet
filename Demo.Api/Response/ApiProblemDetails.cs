@@ -2,11 +2,11 @@
 
 public class ApiProblemDetails
 {
-    public string Type { get; set; }
-    public string Title { get; set; }
-    public string Detail { get; set; }
-    public int Status { get; set; }
-    public List<ErrorMessageDto> Errors { get; set; }
+    public required string Type { get; set; }
+    public required string Title { get; set; }
+    public required string Detail { get; set; }
+    public required int Status { get; set; }
+    public required List<ErrorMessageDto> Errors { get; set; }
 }
 
 public record ErrorMessageDto(string ErrorCode, string ErrorDescription);

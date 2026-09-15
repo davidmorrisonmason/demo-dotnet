@@ -6,27 +6,38 @@ public class Basket : DomainObject, IAggregateRoot
 {
     #region Properties
 
-    public List<BasketItem> BasketItems { get; set; } = [];
+    public List<BasketItem> BasketItems { get; private set; } = [];
+    public DateTime BasketExpirationTime { get; private set; }
+    public BasketStatus Status { get; private set; } = BasketStatus.Open;
+
+    public decimal TotalPrice => BasketItems.Sum(i => i.Price);
 
     #endregion
 
     #region Constructors
 
-    public Basket() : this(UnsavedID)
+    public Basket() : this(UnsavedID, DateTime.MinValue)
     {
     }
 
-    public Basket(int id) : base(id)
+    public Basket(int id, DateTime basketExpirationTime) : base(id)
     {
+        BasketExpirationTime = basketExpirationTime;
     }
-    public Basket(IEnumerable<BasketItem> basketItems) : this(UnsavedID, basketItems)
+
+    public Basket(DateTime basketExpirationTime, IEnumerable<BasketItem> basketItems) : this(UnsavedID, basketExpirationTime, basketItems)
     {
     }
 
     [JsonConstructor]
-    public Basket(int id, IEnumerable<BasketItem> basketItems) : base(id)
+    public Basket(int id, DateTime basketExpirationTime, IEnumerable<BasketItem> basketItems) : this(id, basketExpirationTime)
     {
         BasketItems.AddRange(basketItems);
+
+        foreach (var basketItem in basketItems)
+        {
+            basketItem.OnCreated();
+        }
     }
 
     #endregion
@@ -40,13 +51,19 @@ public class Basket : DomainObject, IAggregateRoot
             var existingItem = BasketItems.FirstOrDefault(i => i.ProductId == basketItem.ProductId);
             if (existingItem != null)
             {
-                existingItem.Quantity += basketItem.Quantity;
+                existingItem.AddQuantity(basketItem.Quantity);
             }
             else
             {
+                basketItem.OnCreated();
                 BasketItems.Add(basketItem);
             }
         }
+    }
+
+    public void Complete()
+    {
+        Status = BasketStatus.Complete;
     }
 
     #endregion

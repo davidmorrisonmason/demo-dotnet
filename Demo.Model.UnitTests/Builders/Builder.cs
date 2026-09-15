@@ -2,9 +2,9 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Demo.Model.UnitTests
+namespace Demo.Model.UnitTests.Builders
 {
-    public class Builder<T> 
+    public class Builder<T>
     {
         protected Builder(T target)
         {
@@ -38,7 +38,7 @@ namespace Demo.Model.UnitTests
         public Builder<T> BuildFrom(T source)
         {
             var serialized = JsonConvert.SerializeObject(source);
-            Target = JsonConvert.DeserializeObject<T>(serialized);
+            Target = JsonConvert.DeserializeObject<T>(serialized)!;
 
             return this;
         }

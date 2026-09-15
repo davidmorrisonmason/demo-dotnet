@@ -6,6 +6,9 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
+using Demo.DomainServices.Context;
+using Demo.DomainServices.Interface.Context;
+
 namespace Demo.DomainServices.Command;
 
 public abstract class CommandHandler<TCommand, TCommandValidator> : BaseCommandHandler, IRequestHandler<TCommand>
@@ -19,7 +22,8 @@ public abstract class CommandHandler<TCommand, TCommandValidator> : BaseCommandH
     public CommandHandler(
         ILogger logger,
         TCommandValidator commandValidator,
-        IUnitOfWork unitOfWork) : base(logger, unitOfWork)
+        IUnitOfWork unitOfWork,
+        IRequestContext requestContext) : base(logger, unitOfWork, requestContext)
     {
         _commandValidator = commandValidator;
     }

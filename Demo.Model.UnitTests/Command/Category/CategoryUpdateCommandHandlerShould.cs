@@ -12,7 +12,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Command.Category
 {
-    [Collection(DatabaseTestCollection.Name)]
+    [Collection(ModelTestsDatabaseTestCollection.Name)]
     public class CategoryUpdateCommandHandlerShould : CommandTest
     {
         private CategoryUpdateCommandHandler _commandHandler;
@@ -20,14 +20,15 @@ namespace Demo.Model.UnitTests.Command.Category
         public CategoryUpdateCommandHandlerShould(DatabaseFixture databaseFixture) : base(databaseFixture)
         {
             var dbContext = new ApplicationDbContext(DbContextOptions);
-            var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>());
+            var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>(), TestRequestContext);
             var aggregateRootFactory = new AggregateRootFactory();
             var unitOfWork = new UnitOfWork(dbContext);
             _commandHandler = new CategoryUpdateCommandHandler(
                 Substitute.For<ILogger<CategoryUpdateCommandHandler>>(),
                 categoryRepository,
                 new CategoryUpdateCommandValidator(categoryRepository),
-                unitOfWork);
+                unitOfWork,
+                TestRequestContext);
         }
 
         [Fact]

@@ -10,7 +10,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Command.Category
 {
-    [Collection(DatabaseTestCollection.Name)]
+    [Collection(ModelTestsDatabaseTestCollection.Name)]
     public class CategoryRemoveSubCategoryCommandHandlerShould : CommandTest
     {
         private readonly CategoryRemoveSubCategoryCommandHandler _commandHandler;
@@ -18,13 +18,14 @@ namespace Demo.Model.UnitTests.Command.Category
         public CategoryRemoveSubCategoryCommandHandlerShould(DatabaseFixture databaseFixture) : base(databaseFixture)
         {
             var dbContext = new ApplicationDbContext(DbContextOptions);
-            var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>());
+            var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>(), TestRequestContext);
 
             _commandHandler = new CategoryRemoveSubCategoryCommandHandler(
                 Substitute.For<ILogger<CategoryRemoveSubCategoryCommandHandler>>(),
                 categoryRepository,
                 new CategoryRemoveSubCategoryCommandValidator(),
-                new UnitOfWork(dbContext));
+                new UnitOfWork(dbContext),
+                TestRequestContext);
         }
 
         [Fact]

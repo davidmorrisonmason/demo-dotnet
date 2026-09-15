@@ -7,7 +7,7 @@ namespace Demo.Model.UnitTests.Validation
     {
         public static IEnumerable<ErrorMessage> BuildErrorMessages<T>(this T error) where T : Enum
         {
-            return BuildErrorMessages(new List<T> { error });
+            return BuildErrorMessages([error]);
         }
 
         public static IEnumerable<ErrorMessage> BuildErrorMessages<T>(this IEnumerable<T> errors) where T : Enum

@@ -6,7 +6,7 @@ namespace Demo.Model.Domain.Exceptions
     {
         public IEnumerable<ErrorMessage> ErrorMessages { get; private set; }
 
-        public ApplicationException(ErrorMessage errorMessage) : this(new List<ErrorMessage> { errorMessage })
+        public ApplicationException(ErrorMessage errorMessage) : this([errorMessage])
         {
         }
 

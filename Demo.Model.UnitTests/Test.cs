@@ -1,5 +1,5 @@
 ﻿using Demo.Infrastructure.Data;
-using Demo.Infrastructure.UnitTests.Builders;
+using Demo.Model.UnitTests.Builders;
 using Microsoft.EntityFrameworkCore;
 
 namespace Demo.Model.UnitTests

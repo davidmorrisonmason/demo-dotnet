@@ -14,7 +14,8 @@ public static class ModelValidationUtils
     /// <returns></returns>
     public static bool TryGetValidationErrorMessage(this string validationErrorMessage, out ErrorMessage errorMessage)
     {
-        errorMessage = null;
+        errorMessage = new ErrorMessage("", "");
+
         bool ok = false;
 
         if (validationErrorMessage != null && validationErrorMessage.StartsWith("API|"))

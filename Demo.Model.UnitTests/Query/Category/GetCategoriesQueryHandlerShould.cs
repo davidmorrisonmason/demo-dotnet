@@ -6,7 +6,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Query.Category
 {
-    [Collection(DatabaseTestCollection.Name)]
+    [Collection(ModelTestsDatabaseTestCollection.Name)]
     public class GetCategoriesQueryHandlerShould : QueryTest
     {
         private GetCategoriesQueryHandler NewQueryHandler()
@@ -14,7 +14,8 @@ namespace Demo.Model.UnitTests.Query.Category
             return new GetCategoriesQueryHandler(
                 new ApplicationDbContext(DbContextOptions),
                 new GetCategoriesQueryValidator(),
-                Substitute.For<ILogger<GetCategoriesQueryHandler>>());
+                Substitute.For<ILogger<GetCategoriesQueryHandler>>(),
+                TestRequestContext);
         }
 
         public GetCategoriesQueryHandlerShould(DatabaseFixture databaseFixture) : base(databaseFixture)
@@ -39,18 +40,17 @@ namespace Demo.Model.UnitTests.Query.Category
             var item3 = BuilderFactory.NewCategoryBuilder(4)
                 .BuildAndPersist();
 
-            List<Domain.Category> expected = new()
-            {
+            List<Domain.Category> expected =
+            [
                 BuilderFactory.NewCategoryBuilder()
                     .BuildFrom(item1)
                     .Build(),
                 BuilderFactory.NewCategoryBuilder()
                     .BuildFrom(item3)
                     .Build()
-            };
+            ];
 
             // Act
-
             using var queryHandler = NewQueryHandler();
             var actual = await queryHandler.Handle(new GetCategoriesQuery(), CancellationToken.None);
 
@@ -74,7 +74,7 @@ namespace Demo.Model.UnitTests.Query.Category
                 .With(x => x.IsDeleted, true)
                 .BuildAndPersist();
 
-            List<Domain.Category> expected = new();
+            List<Domain.Category> expected = [];
 
             // Act
             using var queryHandler = NewQueryHandler();
@@ -89,7 +89,7 @@ namespace Demo.Model.UnitTests.Query.Category
         public async Task ReturnEmptyList_WhenNoneInDatabase()
         {
             // Arrange
-            List<Domain.Category> expected = new();
+            List<Domain.Category> expected = [];
 
             // Act
             using var queryHandler = NewQueryHandler();

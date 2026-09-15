@@ -1,13 +1,13 @@
 using Demo.Infrastructure.Data;
-using Demo.Infrastructure.UnitTests.Builders;
 using Demo.Model.Domain.Checkout;
 
 namespace Demo.Model.UnitTests.Builders.Domain;
 
 public class BasketBuilder : DomainObjectBuilder<Basket>
 {
-    public BasketBuilder(BuilderFactory builderFactory, int databaseSeed, int propertySeed) : base(builderFactory, new Basket(databaseSeed))
+    public BasketBuilder(BuilderFactory builderFactory, int databaseSeed, int propertySeed) : base(builderFactory, new Basket(databaseSeed, DateTime.UtcNow))
     {
+        With(b => b.BasketExpirationTime, DateTime.UtcNow.AddMinutes(20));
     }
 
     public BasketBuilder WithBasketItems(IEnumerable<BasketItem> basketItems)

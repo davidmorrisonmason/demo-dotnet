@@ -42,7 +42,11 @@ public class Product : DomainObject
         string? name,
         decimal price)
     {
-        Name = name;
+        if (name is not null)
+        {
+            Name = name;
+        }
+
         Price = price;
     }
 

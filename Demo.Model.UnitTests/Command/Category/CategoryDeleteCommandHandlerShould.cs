@@ -9,7 +9,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Command.Category
 {
-    [Collection(DatabaseTestCollection.Name)]
+    [Collection(ModelTestsDatabaseTestCollection.Name)]
     public class CategoryDeleteCommandHandlerShould : CommandTest
     {
         private CategoryDeleteCommandHandler _commandHandler;
@@ -17,14 +17,15 @@ namespace Demo.Model.UnitTests.Command.Category
         public CategoryDeleteCommandHandlerShould(DatabaseFixture databaseFixture) : base(databaseFixture)
         {
             var dbContext = new ApplicationDbContext(DbContextOptions);
-            var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>());
+            var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>(), TestRequestContext);
             var unitOfWork = new UnitOfWork(dbContext);
 
             _commandHandler = new CategoryDeleteCommandHandler(
                             Substitute.For<ILogger<CategoryDeleteCommandHandler>>(),
                             categoryRepository,
                             new CategoryDeleteCommandValidator(),
-                            unitOfWork);
+                            unitOfWork,
+                            TestRequestContext);
         }
 
         [Fact]

@@ -14,7 +14,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Command.Category
 {
-    [Collection(DatabaseTestCollection.Name)]
+    [Collection(ModelTestsDatabaseTestCollection.Name)]
     public class CategoryAddProductCommandHandlerShould : CommandTest
     {
         private CategoryAddProductCommandHandler _commandHandler;
@@ -22,14 +22,15 @@ namespace Demo.Model.UnitTests.Command.Category
         public CategoryAddProductCommandHandlerShould(DatabaseFixture databaseFixture) : base(databaseFixture)
         {
             var dbContext = new ApplicationDbContext(DbContextOptions);
-            var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>());
+            var categoryRepository = new CategoryRepository(dbContext, Substitute.For<ILogger<ICategoryRepository>>(), TestRequestContext);
             var aggregateRootFactory = new AggregateRootFactory();
             var unitOfWork = new UnitOfWork(dbContext);
             _commandHandler = new CategoryAddProductCommandHandler(
                 Substitute.For<ILogger<CategoryAddProductCommandHandler>>(),
                 categoryRepository,
                 new CategoryAddProductCommandValidator(categoryRepository),
-                unitOfWork);
+                unitOfWork,
+                TestRequestContext);
         }
 
         [Fact]

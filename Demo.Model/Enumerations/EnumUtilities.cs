@@ -9,14 +9,14 @@ public static class EnumUtilities
             return false;
         }
 
-        return System.Enum.TryParse(typeof(T), enumString, out object _);
+        return System.Enum.TryParse(typeof(T), enumString, out object? _);
     }
 
     public static T EnumValueFromString<T>(this string enumString) where T : System.Enum
     {
         if (enumString != null)
         {
-            if (System.Enum.TryParse(typeof(T), enumString, out object testValue))
+            if (System.Enum.TryParse(typeof(T), enumString, out object? testValue))
             {
                 return (T)testValue;
             }
@@ -31,7 +31,7 @@ public static class EnumUtilities
     {
         if (enumString != null)
         {
-            if (System.Enum.TryParse(typeof(T), enumString, out object testValue))
+            if (System.Enum.TryParse(typeof(T), enumString, out object? testValue))
             {
                 return (T)testValue;
             }
@@ -60,7 +60,7 @@ public static class EnumUtilities
         throw new ArgumentException($"{description} is not a valid enum value description");
     }
 
-    private static EnumDescriptionAttribute GetEnumDescriptionAttribute<T>(T errorCode) where T : System.Enum
+    private static EnumDescriptionAttribute? GetEnumDescriptionAttribute<T>(T errorCode) where T : System.Enum
     {
         try
         {

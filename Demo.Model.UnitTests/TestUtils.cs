@@ -1,8 +1,8 @@
-﻿using Demo.Infrastructure.Data;
+﻿using AwesomeAssertions;
+using AwesomeAssertions.Equivalency;
+using Demo.Infrastructure.Data;
 using Demo.Model.Domain;
 using Demo.Model.Domain.Validation;
-using FluentAssertions;
-using FluentAssertions.Equivalency;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
@@ -19,6 +19,11 @@ public static class TestUtils
     public static void ShouldEqual<T>(this T? actual, T? expected)
     {
         actual.Should().Be(expected);
+    }
+
+    public static void ShouldNotEqual<T>(this T? actual, T? expected)
+    {
+        actual.Should().NotBe(expected);
     }
 
     #endregion
@@ -40,10 +45,10 @@ public static class TestUtils
 
     public static void ShouldBeEquivalentTo<T>(this T? actual, T? expected) where T : class
     {
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBeEquivalentTo(expected, null);
     }
 
-    public static void ShouldBeEquivalentTo<T>(this T actual, T expected, Func<EquivalencyOptions<T>, EquivalencyOptions<T>> options = null) where T : class
+    public static void ShouldBeEquivalentTo<T>(this T? actual, T? expected, Func<EquivalencyOptions<T?>, EquivalencyOptions<T?>>? options = null) where T : class
     {
         // if no explicit options passed in, use a fuzzy datetime match by default
         if (options == null)
@@ -58,7 +63,7 @@ public static class TestUtils
         }
         else
         {
-            Func<EquivalencyOptions<T>, EquivalencyOptions<T>> effectiveOptions = opts =>
+            Func<EquivalencyOptions<T?>, EquivalencyOptions<T?>> effectiveOptions = opts =>
             {
                 opts
                     .Using<string>(ctx =>
@@ -94,7 +99,7 @@ public static class TestUtils
         actual.Should().BeNull();
     }
 
-    public static void ShouldNotBeNull<T>(this T actual) where T : class
+    public static void ShouldNotBeNull<T>(this T? actual) where T : class
     {
         actual.Should().NotBeNull();
     }
@@ -112,8 +117,8 @@ public static class TestUtils
 
     #region API Response
 
-    public static TDto ShouldBeOkResponse<TDto>(this HttpResponseMessage response, TDto expected,
-        Func<EquivalencyOptions<TDto>, EquivalencyOptions<TDto>> options = null) where TDto : class
+    public static TDto? ShouldBeOkResponse<TDto>(this HttpResponseMessage response, TDto expected,
+        Func<EquivalencyOptions<TDto?>, EquivalencyOptions<TDto?>>? options = null) where TDto : class
     {
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var body = ParseHttpResponseAsJObject(response);
@@ -125,11 +130,11 @@ public static class TestUtils
     public static IEnumerable<TDto> ShouldBeOkListResponse<TDto>(
         this HttpResponseMessage response,
         IEnumerable<TDto> expected,
-        Func<EquivalencyOptions<TDto>, EquivalencyOptions<TDto>> options = null) where TDto : class
+        Func<EquivalencyOptions<TDto?>, EquivalencyOptions<TDto?>>? options = null) where TDto : class
     {
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var body = ParseHttpResponseAsJArray(response);
-        var actual = body.Select(x => JsonConvert.DeserializeObject<TDto>(x.ToString())).ToList();
+        List<TDto> actual = [.. body.Select(x => JsonConvert.DeserializeObject<TDto>(x.ToString())).Where(x => x is not null).Select(dto => dto!)];
         var expectedDtos = expected.ToList();
         actual.Count().ShouldEqual(expectedDtos.Count());
         for (int i = 0; i < actual.Count(); i++)
@@ -163,7 +168,7 @@ public static class TestUtils
 
     public static void ShouldBeModelValidationErrorResponse(this HttpResponseMessage response, ErrorMessage expectedErrorMessage)
     {
-        response.ShouldBeModelValidationErrorResponse(new List<ErrorMessage> { expectedErrorMessage });
+        response.ShouldBeModelValidationErrorResponse([expectedErrorMessage]);
     }
 
     public static void ShouldBeModelValidationErrorResponse(this HttpResponseMessage response, IEnumerable<ErrorMessage> expectedErrorMessages)
@@ -171,7 +176,7 @@ public static class TestUtils
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var errors = ParseHttpResponseAsJObject(response)["errors"] as JArray;
         errors.ShouldNotBeNull();
-        var actual = errors.Select(x => new ErrorMessage(x["errorCode"]?.ToString(), x["errorDescription"]?.ToString()));
+        var actual = errors!.Select(x => new ErrorMessage(x["errorCode"]?.ToString() ?? "MISSING", x["errorDescription"]?.ToString() ?? "MISSING"));
         actual.ShouldBeEquivalentTo(expectedErrorMessages);
     }
 
@@ -185,7 +190,7 @@ public static class TestUtils
         var body = ParseHttpResponseAsJObject(response);
         response.StatusCode.Should().Be(HttpStatusCode.Created, because: $"Response should be 201 Created and should not contain errors: {body}");
         body.ContainsKey("id").ShouldBeTrue();
-        int.TryParse(body["id"].ToString(), out int createdId).ShouldBeTrue();
+        int.TryParse(body["id"]?.ToString(), out int createdId).ShouldBeTrue();
 
         return createdId;
     }
@@ -219,6 +224,15 @@ public static class TestUtils
         var expectedIds = expected.Select(x => x.Id);
         var actual = dbContext.Set<T>().Where(x => expectedIds.Contains(x.Id)).ToList();
         actual.ShouldBeEquivalentTo(expected);
+    }
+
+    #endregion
+
+    #region String
+
+    public static void ShouldNotContain(this string actual, string expected)
+    {
+        actual.Should().NotContain(expected);
     }
 
     #endregion

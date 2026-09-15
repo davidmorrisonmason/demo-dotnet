@@ -1,5 +1,6 @@
 ﻿using Demo.DomainServices.Command.Validation;
 using Demo.DomainServices.Interface.Command.Category;
+using Demo.DomainServices.Interface.Context;
 using Demo.DomainServices.Interface.Repository;
 using Demo.DomainServices.Interface.Transaction;
 using Demo.Model.Validation;
@@ -16,20 +17,15 @@ public class CategoryUpdateCommandHandler : CommandHandler<CategoryUpdateCommand
         ILogger<CategoryUpdateCommandHandler> logger,
         ICategoryRepository categoryRepository,
         CategoryUpdateCommandValidator validator,
-        IUnitOfWork unitOfWork) : base(logger, validator, unitOfWork)
+        IUnitOfWork unitOfWork,
+        IRequestContext requestContext) : base(logger, validator, unitOfWork, requestContext)
     {
         _categoryRepository = categoryRepository;
     }
 
     protected override async Task<Model.Domain.Category> Execute(CategoryUpdateCommand command, CancellationToken cancellationToken)
     {
-        var category = await _categoryRepository.Get(command.Id);
-
-        if (category is null)
-        {
-            throw new EntityNotFoundException($"Category with ID {command.Id} does not exist");
-        }
-
+        var category = await _categoryRepository.Get(command.Id) ?? throw new EntityNotFoundException($"Category with ID {command.Id} does not exist");
         category.Update(command.Name);
 
         return category;
