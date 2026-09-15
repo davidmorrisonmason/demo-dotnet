@@ -30,10 +30,10 @@ public class BasketsController : ApiController
     {
         var command = new BasketAddItemsCommand(
             id,
-            basket.BasketItems.Select(item => new BasketItemCommand(
+            [.. basket.BasketItems.Select(item => new BasketItemCommand(
                 item.CategoryId,
                 item.ProductId,
-                item.Quantity)).ToList());
+                item.Quantity))]);
 
         return await ExecutePutCommand<BasketAddItemsCommand, Basket>(command);
     }
@@ -43,10 +43,10 @@ public class BasketsController : ApiController
     public async Task<ActionResult<BasketDto>> Post(BasketCreateDto basket)
     {
         var command = new BasketCreateCommand(
-            basket.BasketItems.Select(item => new BasketItemCommand(
+            [.. basket.BasketItems.Select(item => new BasketItemCommand(
                 item.CategoryId,
                 item.ProductId,
-                item.Quantity)).ToList());
+                item.Quantity))]);
 
         return await ExecutePostCommand<BasketCreateCommand, Basket>(nameof(Post), command);
     }

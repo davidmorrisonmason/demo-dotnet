@@ -19,7 +19,7 @@ namespace Demo.Model.UnitTests.Database
         /// </summary>
         protected virtual bool AddRequestContextTestClient => true;
 
-        public DatabaseTest(DatabaseFixture databaseFixture)
+        public DatabaseTest(BaseDatabaseFixture databaseFixture)
         {
             databaseFixture.ResetDatabase();
 

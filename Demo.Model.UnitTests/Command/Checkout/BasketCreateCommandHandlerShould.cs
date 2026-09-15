@@ -16,7 +16,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Command.Checkout;
 
-[Collection(DatabaseTestCollection.Name)]
+[Collection(ModelTestsDatabaseTestCollection.Name)]
 public class BasketCreateCommandHandlerShould : CommandTest
 {
     private readonly BasketCreateCommandHandler _commandHandler;

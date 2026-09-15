@@ -9,7 +9,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Query.Checkout;
 
-[Collection(DatabaseTestCollection.Name)]
+[Collection(ModelTestsDatabaseTestCollection.Name)]
 public class GetBasketQueryHandlerShould : QueryTest
 {
     private readonly ITimeService _timeService;

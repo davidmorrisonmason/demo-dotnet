@@ -8,7 +8,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Repository;
 
-[Collection(DatabaseTestCollection.Name)]
+[Collection(ModelTestsDatabaseTestCollection.Name)]
 public class BasketRepositoryShould : DatabaseTest
 {
     private readonly DateTime _now = new(2026, 9, 2, 12, 0, 0, DateTimeKind.Utc);

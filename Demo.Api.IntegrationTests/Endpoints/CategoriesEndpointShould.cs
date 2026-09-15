@@ -1,19 +1,19 @@
 using Demo.Api.Dto;
 using Demo.Api.IntegrationTests.Builders;
-using Demo.Model.Domain;
-using Demo.Model.UnitTests.Database;
-namespace Demo.Api.IntegrationTest.Endpoints;
-
 using Demo.DomainServices.Command.Category;
+using Demo.Model.Domain;
 using Demo.Model.UnitTests;
 using Demo.Model.UnitTests.Builders.Domain;
+using Demo.Model.UnitTests.Database;
 using Demo.Model.UnitTests.Validation;
 using System.Net.Http.Json;
 
-[Collection(DatabaseTestCollection.Name)]
+namespace Demo.Api.IntegrationTests.Endpoints;
+
+[Collection(ModelTestsDatabaseTestCollection.Name)]
 public class CategoriesEndpointShould : DemoApiIntegrationTest
 {
-    public CategoriesEndpointShould(DatabaseFixture databaseFixture) : base(databaseFixture)
+    public CategoriesEndpointShould(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)
     {
     }
 
@@ -44,7 +44,7 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
         };
 
         // Act
-        var actual = await Client.GetAsync($"{BaseUrl}/Categories");
+        var actual = await Client.GetAsync($"{BaseUrl}/Categories", Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         actual.ShouldBeOkListResponse(expected);
@@ -69,7 +69,7 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
         var expected = CategoryDtoBuilder.BuildFromCategory(categories[1]).Build();
 
         // Act
-        var actual = await Client.GetAsync($"{BaseUrl}/Categories/{categories[1].Id}");
+        var actual = await Client.GetAsync($"{BaseUrl}/Categories/{categories[1].Id}", Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         actual.ShouldBeOkResponse(expected);
@@ -88,7 +88,7 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
         };
 
         // Act
-        var actual = await Client.GetAsync($"{BaseUrl}/Categories/99");
+        var actual = await Client.GetAsync($"{BaseUrl}/Categories/99", Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         actual.ShouldBeNotFoundErrorResponse();
@@ -107,7 +107,7 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
         };
 
         // Act
-        var actual = await Client.GetAsync($"{BaseUrl}/Categories/{categories[3].Id}");
+        var actual = await Client.GetAsync($"{BaseUrl}/Categories/{categories[3].Id}", Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         actual.ShouldBeNotFoundErrorResponse();
@@ -139,9 +139,8 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
         };
 
         // Act
-        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/",
-            CategoryCreateDtoBuilder.BuildFromCategory(newCategoryBuilder.Build())
-                .Build());
+        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/", CategoryCreateDtoBuilder.BuildFromCategory(newCategoryBuilder.Build())
+                .Build(), cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         AssertCreatedResponse(response, expected, newCategoryBuilder);
@@ -169,9 +168,8 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
         };
 
         // Act
-        var actual = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/",
-            CategoryCreateDtoBuilder.BuildFromCategory(newCategoryBuilder.Build())
-                .Build());
+        var actual = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/", CategoryCreateDtoBuilder.BuildFromCategory(newCategoryBuilder.Build())
+                .Build(), cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         actual.ShouldBeModelValidationErrorResponse(CategoryCommandErrorType.Category_Name_Must_Be_Unique.BuildErrorMessage());
@@ -190,16 +188,15 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
             .With(x => x.Name, "New Subcategory")
             .With(x => x.ParentCategoryId, category.Id)
             .WithNextId();
-        var expectedCategory = (BuilderFactory.NewCategoryBuilder().BuildFrom(category) as CategoryBuilder)
+        var expectedCategory = (BuilderFactory.NewCategoryBuilder().BuildFrom(category) as CategoryBuilder)!
             .WithSubCategories([newSubCategoryBuilder.Build()])
             .Build();
 
         // Act
-        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/SubCategories",
-            new CategoryCreateDto { Name = "New Subcategory" });
+        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/SubCategories", new CategoryCreateDto { Name = "New Subcategory" }, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
-        AssertCreatedResponse(response, new List<Category> { expectedCategory }, newSubCategoryBuilder);
+        AssertCreatedResponse(response, [expectedCategory], newSubCategoryBuilder);
     }
 
     [Fact]
@@ -210,19 +207,18 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
         var payload = new CategoryCreateDto { Name = "" };
 
         // Act
-        var actual = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/SubCategories", payload);
+        var actual = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/SubCategories", payload, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         actual.ShouldBeModelValidationErrorResponse(CategoryCommandErrorType.SubCategory_Name_Required.BuildErrorMessage());
-        AssertCollection(new List<Category> { category });
+        AssertCollection([category]);
     }
 
     [Fact]
     public async Task ReturnNotFound_WhenAddSubCategoryCalledForNonExistentCategory()
     {
         // Act
-        var actual = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/999/SubCategories",
-            new CategoryCreateDto { Name = "New Subcategory" });
+        var actual = await Client.PostAsJsonAsync($"{BaseUrl}/Categories/999/SubCategories", new CategoryCreateDto { Name = "New Subcategory" }, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         actual.ShouldBeNotFoundErrorResponse();
@@ -256,8 +252,7 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
         };
 
         // Act
-        var response = await Client.PutAsJsonAsync($"{BaseUrl}/Categories/{updatedCategory.Id}",
-            CategoryDtoBuilder.BuildFromCategory(updatedCategory).Build());
+        var response = await Client.PutAsJsonAsync($"{BaseUrl}/Categories/{updatedCategory.Id}", CategoryDtoBuilder.BuildFromCategory(updatedCategory).Build(), cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         AssertUpdatedResponse(response, expected);
@@ -288,8 +283,7 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
         };
 
         // Act
-        var actual = await Client.PutAsJsonAsync($"{BaseUrl}/Categories/{updatedCategory.Id}",
-            CategoryDtoBuilder.BuildFromCategory(updatedCategory).Build());
+        var actual = await Client.PutAsJsonAsync($"{BaseUrl}/Categories/{updatedCategory.Id}", CategoryDtoBuilder.BuildFromCategory(updatedCategory).Build(), cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         actual.ShouldBeModelValidationErrorResponse(CategoryCommandErrorType.Category_Name_Must_Be_Unique.BuildErrorMessage());

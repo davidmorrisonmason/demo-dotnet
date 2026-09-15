@@ -1,6 +1,6 @@
 ﻿using Demo.Api.Dto;
 using Demo.Model.Domain;
-using Demo.Model.UnitTests;
+using Demo.Model.UnitTests.Builders;
 
 namespace Demo.Api.IntegrationTests.Builders
 {

@@ -6,7 +6,7 @@ using Demo.Model.UnitTests.Builders.Domain;
 
 namespace Demo.Model.UnitTests.Repository;
 
-[Collection(DatabaseTestCollection.Name)]
+[Collection(ModelTestsDatabaseTestCollection.Name)]
 public class ClientRepositoryShould : DatabaseTest
 {
     private IClientRepository _clientRepository;

@@ -1,6 +1,6 @@
 ﻿using Demo.Api.Dto;
 using Demo.Model.Domain;
-using Demo.Model.UnitTests;
+using Demo.Model.UnitTests.Builders;
 
 namespace Demo.Api.IntegrationTests.Builders
 {
@@ -10,13 +10,19 @@ namespace Demo.Api.IntegrationTests.Builders
         {
             Id = category.Id,
             Name = category.Name,
-            SubCategories = category.SubCategories
+            Products = [.. category.Products
+                .Select(p => new ProductDto()
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price
+                })],
+            SubCategories = [.. category.SubCategories
                 .Select(subCategory => new SubCategoryDto
                 {
                     Id = subCategory.Id,
                     Name = subCategory.Name
-                })
-                .ToList()
+                })]
         })
         {
         }

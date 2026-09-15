@@ -7,12 +7,12 @@ using Demo.Model.UnitTests.Validation;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Json;
 
-namespace Demo.Api.IntegrationTest.Endpoints;
+namespace Demo.Api.IntegrationTests.Endpoints;
 
-[Collection(DatabaseTestCollection.Name)]
+[Collection(ModelTestsDatabaseTestCollection.Name)]
 public class BasketsEndpointShould : DemoApiIntegrationTest
 {
-    public BasketsEndpointShould(DatabaseFixture databaseFixture) : base(databaseFixture)
+    public BasketsEndpointShould(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)
     {
     }
 
@@ -56,7 +56,7 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
             .Build();
 
         // Act
-        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Baskets", payload);
+        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Baskets", payload, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
 
@@ -121,7 +121,7 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
         };
 
         // Act
-        var response = await Client.PutAsJsonAsync($"{BaseUrl}/Baskets/{basket.Id}", payload);
+        var response = await Client.PutAsJsonAsync($"{BaseUrl}/Baskets/{basket.Id}", payload, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         response.ShouldBeNoContentResponse();
@@ -162,7 +162,7 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
             .Build();
 
         // Act
-        var response = await Client.PutAsJsonAsync($"{BaseUrl}/Baskets/{basket.Id}/Complete", payload);
+        var response = await Client.PutAsJsonAsync($"{BaseUrl}/Baskets/{basket.Id}/Complete", payload, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         response.ShouldBeNoContentResponse();
@@ -215,7 +215,7 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
         };
 
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/Baskets/{basket.Id}");
+        var response = await Client.GetAsync($"{BaseUrl}/Baskets/{basket.Id}", Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         response.ShouldBeOkResponse(expected);
@@ -225,7 +225,7 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
     public async Task ReturnNotFound_WhenGetByIdCalledForNonExistentBasket()
     {
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/Baskets/999");
+        var response = await Client.GetAsync($"{BaseUrl}/Baskets/999", Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         response.ShouldBeNotFoundErrorResponse();
@@ -235,9 +235,7 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
     public async Task ReturnValidationError_WhenPostCalledWithEmptyBasketItems()
     {
         // Act
-        var response = await Client.PostAsJsonAsync(
-            $"{BaseUrl}/Baskets",
-            new BasketCreateDto());
+        var response = await Client.PostAsJsonAsync($"{BaseUrl}/Baskets", new BasketCreateDto(), cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         // Assert
         response.ShouldBeModelValidationErrorResponse(

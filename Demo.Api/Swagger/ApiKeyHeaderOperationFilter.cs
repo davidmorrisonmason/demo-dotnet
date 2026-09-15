@@ -11,7 +11,7 @@ public sealed class ApiKeyHeaderOperationFilter : IOperationFilter
 
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        operation.Parameters ??= new List<IOpenApiParameter>();
+        operation.Parameters ??= [];
 
         if (operation.Parameters.Any(parameter =>
                 parameter.In == ParameterLocation.Header &&

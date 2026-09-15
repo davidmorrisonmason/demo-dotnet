@@ -10,7 +10,8 @@ namespace Demo.Model.Logging;
 public class DomainContext : IDomainContext
 {
     private readonly IServiceProvider _serviceProvider;
-    public static IDomainContext Instance { get; private set; }
+    public static IDomainContext Instance => _instance ?? throw new ArgumentNullException(nameof(Instance));
+    private static IDomainContext? _instance;
 
     protected DomainContext(IServiceProvider serviceProvider)
     {
@@ -22,7 +23,7 @@ public class DomainContext : IDomainContext
     /// </summary>
     public static void Setup(IServiceProvider serviceProvider)
     {
-        Instance = new DomainContext(serviceProvider);
+        _instance = new DomainContext(serviceProvider);
     }
 
     /// <summary>
@@ -30,11 +31,11 @@ public class DomainContext : IDomainContext
     /// </summary>
     public static void Setup(IDomainContext mockDomainContext)
     {
-        Instance = mockDomainContext;
+        _instance = mockDomainContext;
     }
 
     public ILogger<T> CreateLogger<T>()
     {
-        return _serviceProvider.GetService<ILogger<T>>();
+        return _serviceProvider.GetService<ILogger<T>>()!;
     }
 }

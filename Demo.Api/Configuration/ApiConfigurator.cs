@@ -1,5 +1,6 @@
 ﻿using Demo.Api.HealthChecks;
 using Demo.Api.Response;
+using Demo.Api.Swagger;
 using Demo.Api.Validation;
 using Demo.DomainServices.Context;
 using Demo.DomainServices.Creation;
@@ -13,7 +14,6 @@ using Demo.DomainServices.Interface.Transaction;
 using Demo.DomainServices.Time;
 using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Repository;
-using Demo.Api.Swagger;
 using Demo.Model.Domain.Exceptions;
 using Demo.Model.Domain.Validation;
 using Demo.Model.Logging;
@@ -28,17 +28,22 @@ using System.Text.Json;
 
 namespace Demo.Api.Configuration
 {
+    /// <summary>
+    /// Configuration helper for a web API
+    /// </summary>
     public static class ApiConfigurator
     {
         /// <summary>
         /// Global service configuration for a standard web API. 
         /// Adds controllers and swagger options.
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="assemblyName"></param>
+        /// <param name="services">The service collection</param>
+        /// <param name="queryAssembly">The query assembly</param>
+        /// <param name="commandAssembly">The command assembly</param>
+        /// <param name="apiAssembly">The API assembly</param>
         public static void ConfigureServices(IServiceCollection services, Assembly queryAssembly, Assembly commandAssembly, Assembly apiAssembly)
         {
-            string assemblyName = apiAssembly.GetName().Name;
+            string assemblyName = apiAssembly.GetName().Name!;
 
             services.AddMediator(cfg =>
             {
@@ -64,7 +69,7 @@ namespace Demo.Api.Configuration
             {
                 options.InvalidModelStateResponseFactory = context =>
                 {
-                    List<ErrorMessageDto> errorMessages = new();
+                    List<ErrorMessageDto> errorMessages = [];
 
                     foreach (var entry in context.ModelState.Values)
                     {
@@ -72,7 +77,8 @@ namespace Demo.Api.Configuration
                         {
                             foreach (var error in entry.Errors)
                             {
-                                ErrorMessage parsedErrorMessage = null;
+                                ErrorMessage parsedErrorMessage = new("", "");
+
                                 if (error.ErrorMessage.TryGetValidationErrorMessage(out parsedErrorMessage))
                                 {
                                     errorMessages.Add(parsedErrorMessage.Adapt<ErrorMessageDto>());
@@ -118,6 +124,11 @@ namespace Demo.Api.Configuration
             services.AddHealthChecks().AddCheck<BasicHealthCheck>("Basic Health Check");
         }
 
+        /// <summary>
+        /// Helper method to configure an API application
+        /// </summary>
+        /// <param name="app">The web application</param>
+        /// <param name="baseRoute">The base route</param>
         public static void ConfigureApplication(this WebApplication app, string baseRoute)
         {
             // Logging provider for getting loggers in situations where DI isn't possible
@@ -155,11 +166,12 @@ namespace Demo.Api.Configuration
                 errorApp.Run(async context =>
                 {
                     var errorFeature = context.Features.Get<IExceptionHandlerFeature>();
-                    var exception = errorFeature.Error;
+                    var exception = errorFeature!.Error;
 
                     // https://tools.ietf.org/html/rfc7807#section-3.1
                     var problemDetails = new ApiProblemDetails
                     {
+                        Errors = [],
                         Status = StatusCodes.Status400BadRequest,
                         Type = $"{exception.GetType().Name}",
                         Title = "An unexpected error occurred",
@@ -172,7 +184,7 @@ namespace Demo.Api.Configuration
                             problemDetails.Status = applicationException is AuthorisationException ? StatusCodes.Status401Unauthorized : StatusCodes.Status400BadRequest;
                             problemDetails.Title = "One or more validation errors occurred";
                             problemDetails.Detail = "The request contains invalid parameters. More information can be found in the errors.";
-                            problemDetails.Errors = applicationException.ErrorMessages.Select(x => x.Adapt<ErrorMessageDto>()).ToList();
+                            problemDetails.Errors = [.. applicationException.ErrorMessages.Select(x => x.Adapt<ErrorMessageDto>())];
                             break;
                     }
 

@@ -6,7 +6,7 @@ using Demo.Model.UnitTests.Database;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace Demo.Api.IntegrationTest;
+namespace Demo.Api.IntegrationTests;
 
 public class DemoApiIntegrationTest : DatabaseTest, IClassFixture<WebApplicationFactory<Program>>
 {
@@ -16,7 +16,7 @@ public class DemoApiIntegrationTest : DatabaseTest, IClassFixture<WebApplication
 
     protected HttpClient Client => _httpClient;
 
-    public DemoApiIntegrationTest(DatabaseFixture databaseFixture) : base(databaseFixture)
+    public DemoApiIntegrationTest(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)
     {
         _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>

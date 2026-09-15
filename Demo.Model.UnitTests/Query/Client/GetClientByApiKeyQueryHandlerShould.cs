@@ -7,7 +7,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Query.Client;
 
-[Collection(DatabaseTestCollection.Name)]
+[Collection(ModelTestsDatabaseTestCollection.Name)]
 public class GetClientByApiKeyQueryHandlerShould : QueryTest
 {
     public GetClientByApiKeyQueryHandlerShould(DatabaseFixture databaseFixture) : base(databaseFixture)

@@ -8,14 +8,29 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.Api.Controllers
 {
+    /// <summary>
+    /// Base controller class
+    /// </summary>
     public class ApiController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// The mediator 
+        /// </summary>
         protected IMediator Mediator => _mediator;
+
+        /// <summary>
+        /// The logger
+        /// </summary>
         protected ILogger Logger => _logger;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="logger">The logger</param>
+        /// <param name="mediator">The mediator</param>
         public ApiController(
             ILogger logger,
             IMediator mediator)
@@ -24,6 +39,12 @@ namespace Demo.Api.Controllers
             _mediator = mediator;
         }
 
+        /// <summary>
+        /// Executes a command
+        /// </summary>
+        /// <typeparam name="TCommand">The type of command to execute</typeparam>
+        /// <param name="command">The command to execute</param>
+        /// <returns>NoContent result</returns>
         protected async Task<ActionResult> ExecuteCommand<TCommand>(TCommand command)
         where TCommand : IRequest
         {
@@ -43,6 +64,14 @@ namespace Demo.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Executes a command and returns a single DTO result
+        /// </summary>
+        /// <typeparam name="TCommand">The type of command</typeparam>
+        /// <typeparam name="TResult">The type of result</typeparam>
+        /// <typeparam name="TResultDto">The type of result DTO</typeparam>
+        /// <param name="command">The command to execute</param>
+        /// <returns>an OK result with the created DTO or an error result</returns>
         protected async Task<ActionResult> ExecuteCommandWithResult<TCommand, TResult, TResultDto>(TCommand command)
         where TCommand : IRequest<TResult>
         where TResult : class
@@ -85,7 +114,7 @@ namespace Demo.Api.Controllers
 
         protected async Task<ActionResult> ExecuteQuerySingle<TQuery, TEntity, TResponseDto>(
             TQuery query)
-            where TQuery : IRequest<TEntity>
+            where TQuery : IRequest<TEntity?>
         {
             try
             {
@@ -172,7 +201,7 @@ namespace Demo.Api.Controllers
             return Ok(list.Select(x => x.Adapt<TDto>()).ToList());
         }
 
-        private ActionResult ToGetResult<TDto>(object sourceObject)
+        private ActionResult ToGetResult<TDto>(object? sourceObject)
         {
             return sourceObject == null ? NotFound() : Ok(sourceObject.Adapt<TDto>());
         }

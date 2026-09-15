@@ -12,5 +12,5 @@ public class TestContext
         _dbContextOptions = dbContextOptions;
     }
 
-    public static ApplicationDbContext DbContext => new ApplicationDbContext(_dbContextOptions);
+    public static ApplicationDbContext DbContext => new ApplicationDbContext(_dbContextOptions ?? throw new ArgumentNullException(nameof(DbContext)));
 }

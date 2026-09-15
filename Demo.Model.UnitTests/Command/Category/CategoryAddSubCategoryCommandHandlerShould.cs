@@ -13,7 +13,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Command.Category
 {
-    [Collection(DatabaseTestCollection.Name)]
+    [Collection(ModelTestsDatabaseTestCollection.Name)]
     public class CategoryAddSubCategoryCommandHandlerShould : CommandTest
     {
         private readonly CategoryAddSubCategoryCommandHandler _commandHandler;

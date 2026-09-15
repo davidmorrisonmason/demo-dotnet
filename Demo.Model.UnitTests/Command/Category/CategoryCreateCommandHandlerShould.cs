@@ -11,7 +11,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Command.Category
 {
-    [Collection(DatabaseTestCollection.Name)]
+    [Collection(ModelTestsDatabaseTestCollection.Name)]
     public class CategoryCreateCommandHandlerShould : CommandTest
     {
         private CategoryCreateCommandHandler _commandHandler;

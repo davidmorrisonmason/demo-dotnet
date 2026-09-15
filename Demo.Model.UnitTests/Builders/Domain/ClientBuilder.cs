@@ -1,5 +1,4 @@
 using Demo.Infrastructure.Data;
-using Demo.Infrastructure.UnitTests.Builders;
 using Demo.Model.Domain;
 
 namespace Demo.Model.UnitTests.Builders.Domain;

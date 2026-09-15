@@ -1,5 +1,4 @@
 using Demo.Infrastructure.Data;
-using Demo.Infrastructure.UnitTests.Builders;
 using Demo.Model.Domain.Checkout;
 
 namespace Demo.Model.UnitTests.Builders.Domain;
@@ -8,8 +7,8 @@ public class CheckoutCompletionBuilder : DomainObjectBuilder<CheckoutCompletion>
 {
     public CheckoutCompletionBuilder(
         BuilderFactory builderFactory,
-        int propertySeed,
-        int databaseSeed) : base(builderFactory, new CheckoutCompletion(
+        int databaseSeed,
+        int propertySeed) : base(builderFactory, new CheckoutCompletion(
             databaseSeed,
             propertySeed,
             $"Recipient {propertySeed}",

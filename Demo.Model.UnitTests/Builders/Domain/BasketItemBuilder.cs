@@ -1,4 +1,3 @@
-using Demo.Infrastructure.UnitTests.Builders;
 using Demo.Model.Domain;
 using Demo.Model.Domain.Checkout;
 
@@ -8,8 +7,8 @@ public class BasketItemBuilder : DomainObjectBuilder<BasketItem>
 {
     public BasketItemBuilder(
         BuilderFactory builderFactory,
-        int propertySeed = 1,
-        int databaseSeed = 0) : base(builderFactory, new BasketItem(databaseSeed, propertySeed, propertySeed, propertySeed))
+        int databaseSeed = 0,
+        int propertySeed = 1) : base(builderFactory, new BasketItem(databaseSeed, propertySeed, propertySeed, propertySeed))
     {
     }
 

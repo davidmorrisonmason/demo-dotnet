@@ -3,16 +3,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Demo.Model.UnitTests.Database;
 
-public class DatabaseFixture
+public abstract class BaseDatabaseFixture
 {
     private static readonly object LockObject = new();
-
+    private static readonly string DatabaseDirectory = "../../../../Databases";
+    protected abstract string DatabaseFile { get; }
     public DbContextOptions<ApplicationDbContext> DbContextOptions { get; }
 
-    public DatabaseFixture()
+    public BaseDatabaseFixture()
     {
         DbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlite("Data Source=..\\..\\..\\..\\Databases\\DemoTestDatabase.db")
+            .UseSqlite($"Data Source={Path.Combine(DatabaseDirectory, DatabaseFile)}")
             .Options;
     }
 
@@ -20,10 +21,20 @@ public class DatabaseFixture
     {
         lock (LockObject)
         {
-            using var context = new ApplicationDbContext(DbContextOptions);
+            if (!File.Exists(Path.Combine(DatabaseDirectory, DatabaseFile)))
+            {
+                Directory.CreateDirectory(DatabaseDirectory);
+                File.WriteAllText(Path.Combine(DatabaseDirectory, DatabaseFile), null);
+            }
 
+            using var context = new ApplicationDbContext(DbContextOptions);
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
         }
     }
+}
+
+public class DatabaseFixture : BaseDatabaseFixture
+{
+    protected override string DatabaseFile => "ModelTestDatabase.db";
 }

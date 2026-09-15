@@ -1,13 +1,11 @@
 ﻿using Demo.DomainServices.Command.Validation;
 using Demo.DomainServices.Interface.Command.Category;
+using Demo.DomainServices.Interface.Context;
 using Demo.DomainServices.Interface.Repository;
 using Demo.DomainServices.Interface.Transaction;
 using Demo.Model.Validation;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-
-using Demo.DomainServices.Context;
-using Demo.DomainServices.Interface.Context;
 
 namespace Demo.DomainServices.Command.Category;
 
@@ -27,13 +25,7 @@ public class CategoryUpdateCommandHandler : CommandHandler<CategoryUpdateCommand
 
     protected override async Task<Model.Domain.Category> Execute(CategoryUpdateCommand command, CancellationToken cancellationToken)
     {
-        var category = await _categoryRepository.Get(command.Id);
-
-        if (category is null)
-        {
-            throw new EntityNotFoundException($"Category with ID {command.Id} does not exist");
-        }
-
+        var category = await _categoryRepository.Get(command.Id) ?? throw new EntityNotFoundException($"Category with ID {command.Id} does not exist");
         category.Update(command.Name);
 
         return category;

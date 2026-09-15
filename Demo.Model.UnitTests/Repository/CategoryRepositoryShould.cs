@@ -7,7 +7,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Repository;
 
-[Collection(DatabaseTestCollection.Name)]
+[Collection(ModelTestsDatabaseTestCollection.Name)]
 public class CategoryRepositoryShould : DatabaseTest
 {
     private readonly ICategoryRepository _repository;

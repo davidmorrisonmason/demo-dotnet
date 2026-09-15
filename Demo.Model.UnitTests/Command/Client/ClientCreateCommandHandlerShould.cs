@@ -10,7 +10,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Command.Client;
 
-[Collection(DatabaseTestCollection.Name)]
+[Collection(ModelTestsDatabaseTestCollection.Name)]
 public class ClientCreateCommandHandlerShould : CommandTest
 {
     private readonly ClientCreateCommandHandler _commandHandler;

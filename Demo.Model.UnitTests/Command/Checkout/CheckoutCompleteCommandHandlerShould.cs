@@ -12,7 +12,7 @@ using NSubstitute;
 
 namespace Demo.Model.UnitTests.Command.Checkout;
 
-[Collection(DatabaseTestCollection.Name)]
+[Collection(ModelTestsDatabaseTestCollection.Name)]
 public class CheckoutCompleteCommandHandlerShould : CommandTest
 {
     private readonly CheckoutCompleteCommandHandler _commandHandler;

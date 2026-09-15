@@ -38,6 +38,7 @@ public class BasketItemShould : ModelTest
         // Assert - nothing to do if no exception was thrown
     }
 
+    [Fact]
     public void ThrowValidationException_When_AddQuantityCalled_WithQuantityThatResultsInNoQuantity()
     {
         // Arrange
