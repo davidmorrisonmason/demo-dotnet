@@ -1,5 +1,4 @@
-﻿using Demo.Api.Logging;
-using Demo.DomainServices.Configuration;
+﻿using Demo.DomainServices.Configuration;
 using Demo.DomainServices.Context;
 using Demo.DomainServices.Creation;
 using Demo.DomainServices.DependencyInjection;
@@ -13,6 +12,7 @@ using Demo.DomainServices.Interface.Time;
 using Demo.DomainServices.Interface.Transaction;
 using Demo.DomainServices.Time;
 using Demo.Infrastructure.Data;
+using Demo.Infrastructure.Logging;
 using Demo.Infrastructure.Query.Category;
 using Demo.Infrastructure.Repository;
 using Demo.Populator;

@@ -17,6 +17,9 @@ using Demo.Infrastructure.Repository;
 using Demo.Model.Domain.Exceptions;
 using Demo.Model.Domain.Validation;
 using Demo.Model.Logging;
+using Demo.Populator;
+using Demo.Populator.Interfaces;
+using Demo.Populator.Populators;
 using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Diagnostics;
@@ -64,6 +67,9 @@ namespace Demo.Api.Configuration
             services.AddSingleton<IEncryptionService, EncryptionService>();
             services.AddScoped<IRequestContext, RequestContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IPopulationManager, PopulationManager>();
+            services.AddScoped<IClientPopulator, ClientPopulator>();
+            services.AddScoped<ICategoryPopulator, CategoryPopulator>();
 
             services.AddControllers()
             .ConfigureApiBehaviorOptions(options =>
@@ -159,13 +165,18 @@ namespace Demo.Api.Configuration
 
             app.MapHealthChecks($"{baseRoute}/healthcheck");
 
-            // Database
+            // Database. In a real system there would be no dependency on a populator project from the prod code or DI plumbing for the populators (see above),
+            // but this is just so we an seed an empty SQLite database within the appdata directory with data on application startup when deploying somewhere,
+            // without the need to create a database server etc. Purely for demo purposes.
             if (app.Environment.IsProduction())
             {
                 using (var scope = app.Services.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     await db.Database.MigrateAsync();
+
+                    var populator = scope.ServiceProvider.GetRequiredService<IPopulationManager>();
+                    await populator.DoPopulation();
                 }
             }
         }
