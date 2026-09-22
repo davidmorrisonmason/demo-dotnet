@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-namespace Demo.Api.Logging;
+namespace Demo.Infrastructure.Logging;
 
 public static class LoggingUtilities
 {

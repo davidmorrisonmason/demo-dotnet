@@ -1,6 +1,6 @@
 ﻿using Demo.Model.Domain;
 
-namespace Demo.Populator.Interfaces;
+namespace Demo.Populator.Core.Interfaces;
 
 public interface ICategoryPopulator : IPopulator
 {
