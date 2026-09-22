@@ -25,7 +25,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 var app = builder.Build();
 
-ApiConfigurator.ConfigureApplication(app, "api");
+await ApiConfigurator.ConfigureApplication(app, "api");
 
 app.Run();
 

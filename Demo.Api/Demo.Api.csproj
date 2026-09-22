@@ -36,4 +36,13 @@
     <ProjectReference Include="..\Demo.Model\Demo.Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="AppData\README.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="AppData\demo.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

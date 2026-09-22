@@ -22,6 +22,7 @@ using Mapster;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 using System.Reflection;
 using System.Text.Json;
@@ -129,7 +130,7 @@ namespace Demo.Api.Configuration
         /// </summary>
         /// <param name="app">The web application</param>
         /// <param name="baseRoute">The base route</param>
-        public static void ConfigureApplication(this WebApplication app, string baseRoute)
+        public static async Task ConfigureApplication(this WebApplication app, string baseRoute)
         {
             // Logging provider for getting loggers in situations where DI isn't possible
             DomainContext.Setup(app.Services);
@@ -157,6 +158,16 @@ namespace Demo.Api.Configuration
             app.MapControllers();
 
             app.MapHealthChecks($"{baseRoute}/healthcheck");
+
+            // Database
+            if (app.Environment.IsProduction())
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    await db.Database.MigrateAsync();
+                }
+            }
         }
 
         private static void ConfigureExceptionHandling(this WebApplication app)
