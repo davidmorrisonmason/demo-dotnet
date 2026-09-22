@@ -65,7 +65,14 @@ stages:
 
     steps:
 
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: publish
+        publishWebProjects: True
+        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+        zipAfterPublish: True
+
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(Pipeline.Workspace)'
-        publishLocation: 'pipeline'
+        targetPath: '$(Build.ArtifactStagingDirectory)' 
+        artifactName: 'DemoWebApi'
