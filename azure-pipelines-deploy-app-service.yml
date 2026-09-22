@@ -2,6 +2,11 @@
 # Build and test ASP.NET projects.
 # Add steps that publish symbols, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+#
+# Note: to use the pipeline in Azure DevOps, you need to define the following variables on the pipeline:
+#
+# - AzureSubscription - the subscription in Azure that the AppService app you are deploying to exists in
+# - WbAppName - the App Service app name in the subscription. It should be set up as a .NET 10 Linux web app
 
 name: $(SourceBranchName)_$(Date:yyyyMMdd).$(Rev:r)
 
@@ -39,7 +44,7 @@ stages:
         ConnectionType: 'AzureRM'
         azureSubscription: '$(AzureSubscription)'
         appType: 'webAppLinux'
-        WebAppName: 'DemoDotNet'
+        WebAppName: '$(WebAppName)'
         packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
         RuntimeStack: 'DOTNETCORE|10.0'
         DeploymentTypeLinux: 'zipDeploy'
