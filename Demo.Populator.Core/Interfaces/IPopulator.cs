@@ -1,4 +1,4 @@
-﻿namespace Demo.Populator.Interfaces;
+﻿namespace Demo.Populator.Core.Interfaces;
 
 public interface IPopulator
 {

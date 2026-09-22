@@ -1,9 +1,9 @@
 ﻿using Demo.Infrastructure.Data;
-using Demo.Populator.Interfaces;
+using Demo.Populator.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Demo.Populator;
+namespace Demo.Populator.Core;
 
 public class PopulationManager : IPopulationManager
 {

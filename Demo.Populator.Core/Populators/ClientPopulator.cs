@@ -2,10 +2,10 @@ using Demo.DomainServices.Interface.Command.Client;
 using Demo.DomainServices.Interface.Encryption;
 using Demo.DomainServices.Interface.Orchestration;
 using Demo.Model.Domain;
-using Demo.Populator.Interfaces;
+using Demo.Populator.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace Demo.Populator.Populators;
+namespace Demo.Populator.Core.Populators;
 
 public class ClientPopulator : Populator, IClientPopulator
 {

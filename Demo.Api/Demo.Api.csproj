@@ -34,7 +34,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Demo.Infrastructure\Demo.Infrastructure.csproj" />
     <ProjectReference Include="..\Demo.Model\Demo.Model.csproj" />
-    <ProjectReference Include="..\Demo.Populator\Demo.Populator.csproj" />
+    <ProjectReference Include="..\Demo.Populator.Core\Demo.Populator.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
