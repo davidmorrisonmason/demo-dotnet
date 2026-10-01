@@ -13,7 +13,7 @@ public class Repository<T> : IRepository<T> where T : DomainObject, IAggregateRo
     protected IRequestContext RequestContext { get; }
     internal DbSet<T> dbSet;
 
-    protected IQueryable<T> NonDeletedEntities => dbSet.AsQueryable()
+    protected virtual IQueryable<T> NonDeletedEntities => dbSet.AsQueryable()
         .Where(x => !x.IsDeleted);
 
     public Repository(ApplicationDbContext db, IRequestContext requestContext)

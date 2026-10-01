@@ -33,7 +33,11 @@ public class GetBasketQueryHandler : SingleQueryHandler<
         return await QueryNonDeleted<Model.Domain.Checkout.Basket>()
             .Include(basket => basket.BasketItems)
                 .ThenInclude(item => item.Product)
-            .Where(basket => basket.Id == query.Id && basket.BasketExpirationTime >= now && basket.Status == BasketStatus.Open)
+            .Where(basket =>
+                basket.ClientId == RequestContext.ClientId &&
+                basket.Id == query.Id &&
+                basket.BasketExpirationTime >= now &&
+                basket.Status == BasketStatus.Open)
             .FirstOrDefaultAsync();
     }
 

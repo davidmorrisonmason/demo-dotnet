@@ -45,7 +45,7 @@ public class BasketCreateCommandHandler : ResultCommandHandler<BasketCreateComma
             command.BasketItems);
 
         var basketExpirationTime = _timeService.UtcNow.AddMinutes(_basketSettings.BasketExpirationMinutes);
-        var basket = new Basket(basketExpirationTime, command.BasketItems.Adapt<List<BasketItem>>());
+        var basket = new Basket(basketExpirationTime, command.BasketItems.Adapt<List<BasketItem>>(), RequestContext.ClientId);
         basket.OnCreated();
 
         await _basketRepository.Add(basket);

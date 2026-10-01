@@ -71,6 +71,10 @@ public class ApplicationDbContext : DbContext
 
             basket.HasKey(b => b.Id);
 
+            basket.HasOne<Client>()
+                .WithMany()
+                .HasForeignKey(b => b.ClientId);
+
             basket.HasMany(b => b.BasketItems)
                 .WithOne()
                 .HasForeignKey(i => i.BasketId);

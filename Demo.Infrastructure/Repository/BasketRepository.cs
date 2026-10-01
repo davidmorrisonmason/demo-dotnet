@@ -11,6 +11,9 @@ public class BasketRepository : Repository<Basket>, IBasketRepository
 {
     private readonly ITimeService _timeService;
 
+    protected override IQueryable<Basket> NonDeletedEntities => base.NonDeletedEntities
+        .Where(b => b.ClientId == RequestContext.ClientId);
+
     public BasketRepository(ApplicationDbContext dbContext, IRequestContext requestContext, ITimeService timeService) : base(dbContext, requestContext)
     {
         _timeService = timeService;
