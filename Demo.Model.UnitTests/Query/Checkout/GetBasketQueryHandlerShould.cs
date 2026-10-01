@@ -143,4 +143,24 @@ public class GetBasketQueryHandlerShould : QueryTest
         // Assert
         actual.ShouldBeNull();
     }
+
+    [Fact]
+    public async Task ReturnNull_WhenBasketBelongsToAnotherClient()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        _timeService.UtcNow.Returns(now);
+        var otherClient = BuilderFactory.NewClientBuilder(2).BuildAndPersist();
+        var basket = BuilderFactory.NewBasketBuilder()
+            .With(x => x.ClientId, otherClient.Id)
+            .With(x => x.BasketExpirationTime, now.AddMinutes(1))
+            .BuildAndPersist();
+
+        // Act
+        using var handler = NewQueryHandler();
+        var actual = await handler.Handle(new GetBasketQuery(basket.Id), Xunit.TestContext.Current.CancellationToken);
+
+        // Assert
+        actual.ShouldBeNull();
+    }
 }

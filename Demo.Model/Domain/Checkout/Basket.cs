@@ -9,6 +9,7 @@ public class Basket : DomainObject, IAggregateRoot
     public List<BasketItem> BasketItems { get; private set; } = [];
     public DateTime BasketExpirationTime { get; private set; }
     public BasketStatus Status { get; private set; } = BasketStatus.Open;
+    public int ClientId { get; private set; }
 
     public decimal TotalPrice => BasketItems.Sum(i => i.Price);
 
@@ -16,21 +17,22 @@ public class Basket : DomainObject, IAggregateRoot
 
     #region Constructors
 
-    public Basket() : this(UnsavedID, DateTime.MinValue)
+    public Basket() : this(UnsavedID, DateTime.MinValue, UnsavedID)
     {
     }
 
-    public Basket(int id, DateTime basketExpirationTime) : base(id)
+    public Basket(int id, DateTime basketExpirationTime, int clientId) : base(id)
     {
         BasketExpirationTime = basketExpirationTime;
+        ClientId = clientId;
     }
 
-    public Basket(DateTime basketExpirationTime, IEnumerable<BasketItem> basketItems) : this(UnsavedID, basketExpirationTime, basketItems)
+    public Basket(DateTime basketExpirationTime, IEnumerable<BasketItem> basketItems, int clientId) : this(UnsavedID, basketExpirationTime, basketItems, clientId)
     {
     }
 
     [JsonConstructor]
-    public Basket(int id, DateTime basketExpirationTime, IEnumerable<BasketItem> basketItems) : this(id, basketExpirationTime)
+    public Basket(int id, DateTime basketExpirationTime, IEnumerable<BasketItem> basketItems, int clientId) : this(id, basketExpirationTime, clientId)
     {
         BasketItems.AddRange(basketItems);
 

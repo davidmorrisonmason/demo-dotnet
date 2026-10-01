@@ -113,4 +113,40 @@ public class BasketRepositoryShould : DatabaseTest
         // Assert
         actual.ShouldBeNull();
     }
+
+    [Fact]
+    public async Task ReturnNull_WhenBasketBelongsToAnotherClient()
+    {
+        // Arrange
+        var otherClient = BuilderFactory.NewClientBuilder(2).BuildAndPersist();
+        var basket = BuilderFactory.NewBasketBuilder()
+            .With(x => x.ClientId, otherClient.Id)
+            .With(x => x.BasketExpirationTime, _now.AddMinutes(1))
+            .BuildAndPersist();
+
+        // Act
+        var actual = await _repository.Get(basket.Id);
+        actual.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task FilterOtherClientsAndUnownedBaskets_WhenGetAllCalled()
+    {
+        // Arrange
+        var ownedBasket = BuilderFactory.NewBasketBuilder().BuildAndPersist();
+        var otherClient = BuilderFactory.NewClientBuilder(2).BuildAndPersist();
+        BuilderFactory.NewBasketBuilder().With(x => x.ClientId, otherClient.Id).BuildAndPersist();
+        BuilderFactory.NewBasketBuilder().With(x => x.ClientId, otherClient.Id).BuildAndPersist();
+
+        var expected = new List<Basket>
+        {
+            BuilderFactory.NewBasketBuilder().BuildFrom(ownedBasket).Build()
+        };
+
+        // Act
+        var actual = await _repository.GetAll();
+
+        // Assert
+        actual.ShouldBeEquivalentTo(expected);
+    }
 }

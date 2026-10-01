@@ -232,6 +232,39 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
     }
 
     [Fact]
+    public async Task ReturnNotFound_WhenGetByIdCalledForAnotherClientsBasket()
+    {
+        // Arrange
+        var category = BuilderFactory.NewCategoryBuilder()
+            .WithProducts(
+            [
+                BuilderFactory.NewProductBuilder(1).Build()
+            ])
+            .BuildAndPersist();
+
+        var otherClient = BuilderFactory.NewClientBuilder()
+            .BuildAndPersist();
+
+        var basket = BuilderFactory.NewBasketBuilder()
+            .WithBasketItems(
+            [
+                BuilderFactory.NewBasketItemBuilder()
+                   .WithNextId()
+                   .With(x => x.ProductId, category.Products[0].Id)
+                   .With(x => x.Quantity, 2)
+                   .Build()
+            ])
+            .With(x => x.ClientId, otherClient.Id)
+            .BuildAndPersist();
+
+        // Act
+        var response = await Client.GetAsync($"{BaseUrl}/Baskets/{basket.Id}", Xunit.TestContext.Current.CancellationToken);
+
+        // Assert
+        response.ShouldBeNotFoundErrorResponse();
+    }
+
+    [Fact]
     public async Task ReturnValidationError_WhenPostCalledWithEmptyBasketItems()
     {
         // Act
@@ -241,4 +274,6 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
         response.ShouldBeModelValidationErrorResponse(
             Demo.DomainServices.Command.Checkout.BasketCommandErrorType.Basket_Items_Required.BuildErrorMessage());
     }
+
+
 }
