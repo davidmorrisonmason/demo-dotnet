@@ -19,7 +19,6 @@ using Demo.Populator.Core;
 using Demo.Populator.Core.Interfaces;
 using Demo.Populator.Core.Populators;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,10 +30,7 @@ builder.Services.Configure<BasketSettings>(configuration.GetSection(nameof(Baske
 
 LoggingUtilities.ConfigureLogging(builder.Services, configuration);
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddApplicationDatabase(configuration);
 
 builder.Services.AddMediator(cfg =>
 {

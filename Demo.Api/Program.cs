@@ -4,7 +4,6 @@ using Demo.DomainServices.Configuration;
 using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Logging;
 using Demo.Infrastructure.Query.Category;
-using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,10 +16,7 @@ LoggingUtilities.ConfigureLogging(builder.Services, configuration);
 // Add global services to the container.
 ApiConfigurator.ConfigureServices(builder.Services, typeof(GetCategoriesQueryHandler).Assembly, typeof(CategoryCreateCommandHandler).Assembly, Assembly.GetExecutingAssembly());
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddApplicationDatabase(configuration);
 
 
 var app = builder.Build();

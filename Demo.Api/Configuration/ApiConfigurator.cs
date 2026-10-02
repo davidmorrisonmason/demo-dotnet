@@ -166,8 +166,8 @@ namespace Demo.Api.Configuration
             app.MapHealthChecks($"{baseRoute}/healthcheck");
 
             // Database. In a real system there would be no dependency on a populator project from the prod code or DI plumbing for the populators (see above),
-            // but this is just so we an seed an empty SQLite database within the appdata directory with data on application startup when deploying somewhere,
-            // without the need to create a database server etc. Purely for demo purposes.
+            // but this is just so we can seed an empty configured database on startup.
+            // Moving migrations and demo population out of production startup is a separate deployment change.
             if (app.Environment.IsProduction())
             {
                 using (var scope = app.Services.CreateScope())

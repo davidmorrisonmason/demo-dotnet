@@ -5,6 +5,11 @@ using Demo.Model.UnitTests.Builders.Domain;
 using Demo.Model.UnitTests.Database;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Demo.Api.IntegrationTests;
 
@@ -22,6 +27,14 @@ public class DemoApiIntegrationTest : DatabaseTest, IClassFixture<WebApplication
             .WithWebHostBuilder(builder =>
             {
                 builder.UseEnvironment("ApiIntegrationTests");
+                // Transitional: step 4 will replace the SQLite fixture with SQL Server.
+                builder.ConfigureTestServices(services =>
+                {
+                    services.RemoveAll<ApplicationDbContext>();
+                    services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
+                    services.RemoveAll<IDbContextOptionsConfiguration<ApplicationDbContext>>();
+                    services.AddScoped(_ => new ApplicationDbContext(databaseFixture.DbContextOptions));
+                });
             });
         _httpClient = _factory.CreateClient();
 
