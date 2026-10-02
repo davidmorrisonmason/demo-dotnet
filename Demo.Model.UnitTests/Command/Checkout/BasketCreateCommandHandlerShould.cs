@@ -106,6 +106,30 @@ public class BasketCreateCommandHandlerShould : CommandTest
     }
 
     [Fact]
+    public async Task RejectDeletedProduct_WithoutCreatingBasketOrChangingCategory()
+    {
+        // Arrange
+        var category = BuilderFactory.NewCategoryBuilder()
+            .WithProducts([
+                BuilderFactory.NewProductBuilder(1).Build(),
+                BuilderFactory.NewProductBuilder(2).WithDeletedStatus().Build()
+            ]).BuildAndPersist();
+        var expectedCategory = BuilderFactory.NewCategoryBuilder().BuildFrom(category).Build();
+        var expectedBaskets = new List<Demo.Model.Domain.Checkout.Basket>();
+        var command = new BasketCreateCommand([new BasketItemCommand(category.Id, category.Products[1].Id, 1)]);
+
+        // Act
+        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, Xunit.TestContext.Current.CancellationToken));
+
+        // Assert
+        Assert.IsType<EntityNotFoundException>(exception);
+        expectedCategory.ShouldBeInDatabase(db => db.Categories.Include(c => c.Products));
+        using var dbContext = new ApplicationDbContext(DbContextOptions);
+        var actualBaskets = dbContext.Baskets.Include(b => b.BasketItems).ToList();
+        actualBaskets.ShouldBeEquivalentTo(expectedBaskets);
+    }
+
+    [Fact]
     public async Task ThrowEntityNotFoundException_WhenExecuteCalled_WithNonExistentCategory()
     {
         // Arrange

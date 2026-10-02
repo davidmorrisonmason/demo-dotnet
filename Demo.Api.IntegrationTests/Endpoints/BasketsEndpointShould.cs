@@ -1,4 +1,5 @@
 using Demo.Api.Dto;
+using Demo.Infrastructure.Data;
 using Demo.Model.Domain.Checkout;
 using Demo.Model.UnitTests;
 using Demo.Model.UnitTests.Builders.Domain;
@@ -14,6 +15,49 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
 {
     public BasketsEndpointShould(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)
     {
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ReturnNotFoundAndPreserveObjectGraphs_WhenUsingDeletedProduct(bool addToExistingBasket)
+    {
+        // Arrange
+        var category = BuilderFactory.NewCategoryBuilder().WithProducts([
+            BuilderFactory.NewProductBuilder(1).Build(),
+            BuilderFactory.NewProductBuilder(2).WithDeletedStatus().Build()
+        ]).BuildAndPersist();
+        var expectedCategory = BuilderFactory.NewCategoryBuilder().BuildFrom(category).Build();
+        var expectedBaskets = new List<Basket>();
+        var route = $"{BaseUrl}/Baskets";
+        if (addToExistingBasket)
+        {
+            var basket = BuilderFactory.NewBasketBuilder().WithBasketItems([
+                BuilderFactory.NewBasketItemBuilder().With(x => x.ProductId, category.Products[0].Id).Build()
+            ]).BuildAndPersist();
+            expectedBaskets.Add(((BasketBuilder)BuilderFactory.NewBasketBuilder().BuildFrom(basket))
+                .WithBasketItems([
+                    ((BasketItemBuilder)BuilderFactory.NewBasketItemBuilder().BuildFrom(basket.BasketItems[0]))
+                        .WithProduct(BuilderFactory.NewProductBuilder().BuildFrom(category.Products[0]).Build()).Build()
+                ]).Build());
+            route += $"/{basket.Id}";
+        }
+        var payload = new BasketCreateDto
+        {
+            BasketItems = [new BasketItemCreateDto { CategoryId = category.Id, ProductId = category.Products[1].Id, Quantity = 1 }]
+        };
+
+        // Act
+        var response = addToExistingBasket
+            ? await Client.PutAsJsonAsync(route, payload, cancellationToken: Xunit.TestContext.Current.CancellationToken)
+            : await Client.PostAsJsonAsync(route, payload, cancellationToken: Xunit.TestContext.Current.CancellationToken);
+
+        // Assert
+        response.ShouldBeNotFoundErrorResponse();
+        expectedCategory.ShouldBeInDatabase(db => db.Categories.Include(c => c.Products));
+        using var dbContext = new ApplicationDbContext(DbContextOptions);
+        var actualBaskets = dbContext.Baskets.Include(b => b.BasketItems).ThenInclude(i => i.Product).ToList();
+        actualBaskets.ShouldBeEquivalentTo(expectedBaskets);
     }
 
     [Fact]

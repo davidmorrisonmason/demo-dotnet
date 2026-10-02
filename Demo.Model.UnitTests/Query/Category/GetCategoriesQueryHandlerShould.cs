@@ -59,6 +59,38 @@ namespace Demo.Model.UnitTests.Query.Category
         }
 
         [Fact]
+        public async Task ExcludeDeletedChildren_WhenLoadingCategoryGraphs_WithDeletedEntitiesAlreadyTracked()
+        {
+            // Arrange
+            var category = BuilderFactory.NewCategoryBuilder()
+                .With(x => x.Products, [
+                    BuilderFactory.NewProductBuilder(1).Build(),
+                    BuilderFactory.NewProductBuilder(2).WithDeletedStatus().Build()
+                ])
+                .With(x => x.SubCategories, [
+                    BuilderFactory.NewCategoryBuilder(2).Build(),
+                    BuilderFactory.NewCategoryBuilder(3).WithDeletedStatus().Build()
+                ])
+                .BuildAndPersist();
+            var expectedCategory = BuilderFactory.NewCategoryBuilder().BuildFrom(category)
+                .With(x => x.Products, [BuilderFactory.NewProductBuilder().BuildFrom(category.Products[0]).Build()])
+                .With(x => x.SubCategories, [BuilderFactory.NewCategoryBuilder().BuildFrom(category.SubCategories[0]).Build()])
+                .Build();
+            var expected = new[] { expectedCategory };
+            using var dbContext = new ApplicationDbContext(DbContextOptions);
+            dbContext.Products.ToList();
+            dbContext.Categories.ToList();
+            using var queryHandler = new GetCategoriesQueryHandler(dbContext, new GetCategoriesQueryValidator(),
+                Substitute.For<ILogger<GetCategoriesQueryHandler>>(), TestRequestContext);
+
+            // Act
+            var actual = await queryHandler.Handle(new GetCategoriesQuery(), Xunit.TestContext.Current.CancellationToken);
+
+            // Assert
+            actual.ShouldBeEquivalentTo(expected);
+        }
+
+        [Fact]
         public async Task ReturnEmptyList_WhenAllDeleted()
         {
             // Arrange

@@ -4,6 +4,7 @@ using Demo.Model.Domain;
 using Demo.Model.UnitTests;
 using Demo.Model.UnitTests.Database;
 using Demo.Model.UnitTests.Validation;
+using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Json;
 
 namespace Demo.Api.IntegrationTests.Endpoints;
@@ -13,6 +14,28 @@ public class ProductsEndpointShould : DemoApiIntegrationTest
 {
     public ProductsEndpointShould(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)
     {
+    }
+
+    [Fact]
+    public async Task ReturnNotFoundAndPreserveCategoryGraph_WhenUpdatingDeletedProduct()
+    {
+        // Arrange
+        var category = BuilderFactory.NewCategoryBuilder()
+            .WithProducts([
+                BuilderFactory.NewProductBuilder(1).Build(),
+                BuilderFactory.NewProductBuilder(2).WithDeletedStatus().Build()
+            ]).BuildAndPersist();
+        var expected = BuilderFactory.NewCategoryBuilder().BuildFrom(category).Build();
+        var deletedProduct = category.Products[1];
+        var payload = new ProductUpdateDto { Name = "Updated deleted product", Price = 25m };
+
+        // Act
+        var response = await Client.PutAsJsonAsync($"{BaseUrl}/Categories/{category.Id}/Products/{deletedProduct.Id}", payload,
+            cancellationToken: Xunit.TestContext.Current.CancellationToken);
+
+        // Assert
+        response.ShouldBeNotFoundErrorResponse();
+        expected.ShouldBeInDatabase(db => db.Categories.Include(c => c.Products));
     }
 
     #region Post

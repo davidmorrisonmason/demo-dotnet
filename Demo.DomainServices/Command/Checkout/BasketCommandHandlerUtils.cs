@@ -26,7 +26,7 @@ internal static class BasketCommandHandlerUtils
 
         foreach (var item in basketItems)
         {
-            if (!categories[item.CategoryId].Products.Any(product => product.Id == item.ProductId))
+            if (!categories[item.CategoryId].Products.Any(product => product.Id == item.ProductId && !product.IsDeleted))
             {
                 throw new EntityNotFoundException(
                     $"Product with ID {item.ProductId} does not exist within category with ID {item.CategoryId}");

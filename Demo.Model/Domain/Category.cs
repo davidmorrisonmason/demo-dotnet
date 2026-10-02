@@ -100,7 +100,7 @@ public class Category : DomainObject, IAggregateRoot
 
     public void ValidateProductExists(int id)
     {
-        if (!Products.Any(x => x.Id == id))
+        if (!Products.Any(x => x.Id == id && !x.IsDeleted))
         {
             LogMessageAndThrowEntityNotFoundException(_logger, $"Product with supplied ID '{id}' does not exist");
         }
@@ -108,7 +108,7 @@ public class Category : DomainObject, IAggregateRoot
 
     public void ValidateSubCategoryExists(int id)
     {
-        if (!SubCategories.Any(x => x.Id == id))
+        if (!SubCategories.Any(x => x.Id == id && !x.IsDeleted))
         {
             LogMessageAndThrowEntityNotFoundException(_logger, $"Subcategory with supplied ID '{id}' does not exist");
         }
@@ -126,7 +126,7 @@ public class Category : DomainObject, IAggregateRoot
 
     private void ValidateProductNameUnique(string name, int? excludeId = null)
     {
-        if (Products.Any(x => x.Name == name && x.Id != excludeId))
+        if (Products.Any(x => !x.IsDeleted && x.Name == name && x.Id != excludeId))
         {
             LogMessageAndThrowValidationException(_logger, CategoryErrorType.Product_Name_Must_Be_Unique);
         }
@@ -134,7 +134,7 @@ public class Category : DomainObject, IAggregateRoot
 
     private void ValidateSubCategoryNameUnique(string name, int? excludeId = null)
     {
-        if (SubCategories.Any(x => x.Name == name && x.Id != excludeId))
+        if (SubCategories.Any(x => !x.IsDeleted && x.Name == name && x.Id != excludeId))
         {
             LogMessageAndThrowValidationException(_logger, CategoryErrorType.SubCategory_Name_Must_Be_Unique);
         }

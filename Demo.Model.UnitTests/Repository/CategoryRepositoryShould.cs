@@ -12,6 +12,49 @@ public class CategoryRepositoryShould : DatabaseTest
 {
     private readonly ICategoryRepository _repository;
 
+    [Theory]
+    [InlineData("Get")]
+    [InlineData("GetAllByName")]
+    [InlineData("GetAllByNameExcludingId")]
+    public async Task ExcludeDeletedChildren_WhenLoadingCategoryGraph(string operation)
+    {
+        // Arrange
+        var category = BuilderFactory.NewCategoryBuilder()
+            .WithProducts([
+                BuilderFactory.NewProductBuilder(1).Build(),
+                BuilderFactory.NewProductBuilder(2).WithDeletedStatus().Build()
+            ])
+            .WithSubCategories([
+                BuilderFactory.NewCategoryBuilder(2).WithProducts([
+                    BuilderFactory.NewProductBuilder(3).Build(),
+                    BuilderFactory.NewProductBuilder(4).WithDeletedStatus().Build()
+                ]).Build(),
+                BuilderFactory.NewCategoryBuilder(3).WithProducts([
+                    BuilderFactory.NewProductBuilder(5).Build()
+                ]).WithDeletedStatus().Build()
+            ])
+            .BuildAndPersist();
+        var expectedChild = ((CategoryBuilder)BuilderFactory.NewCategoryBuilder().BuildFrom(category.SubCategories[0]))
+            .WithProducts([BuilderFactory.NewProductBuilder().BuildFrom(category.SubCategories[0].Products[0]).Build()])
+            .Build();
+        var expectedCategory = ((CategoryBuilder)BuilderFactory.NewCategoryBuilder().BuildFrom(category))
+            .WithProducts([BuilderFactory.NewProductBuilder().BuildFrom(category.Products[0]).Build()])
+            .WithSubCategories([expectedChild])
+            .Build();
+        var expected = new[] { expectedCategory };
+
+        // Act
+        var actual = operation switch
+        {
+            "Get" => new[] { (await _repository.Get(category.Id))! },
+            "GetAllByName" => await _repository.GetAllByName(category.Name),
+            _ => await _repository.GetAllByNameExcludingId(category.Name, -1)
+        };
+
+        // Assert
+        actual.ShouldBeEquivalentTo(expected);
+    }
+
     public CategoryRepositoryShould(DatabaseFixture databaseFixture) : base(databaseFixture)
     {
         _repository = new CategoryRepository(

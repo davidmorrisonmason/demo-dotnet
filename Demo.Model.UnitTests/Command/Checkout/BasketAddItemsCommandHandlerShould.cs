@@ -135,6 +135,35 @@ public class BasketAddItemsCommandHandlerShould : CommandTest
     }
 
     [Fact]
+    public async Task RejectDeletedProduct_WithoutChangingBasketOrCategory()
+    {
+        // Arrange
+        var category = BuilderFactory.NewCategoryBuilder()
+            .WithProducts([
+                BuilderFactory.NewProductBuilder(1).Build(),
+                BuilderFactory.NewProductBuilder(2).WithDeletedStatus().Build()
+            ]).BuildAndPersist();
+        var basket = BuilderFactory.NewBasketBuilder().WithBasketItems([
+            BuilderFactory.NewBasketItemBuilder().With(x => x.ProductId, category.Products[0].Id).Build()
+        ]).BuildAndPersist();
+        var expectedCategory = BuilderFactory.NewCategoryBuilder().BuildFrom(category).Build();
+        var expectedBasket = ((BasketBuilder)BuilderFactory.NewBasketBuilder().BuildFrom(basket))
+            .WithBasketItems([
+                ((BasketItemBuilder)BuilderFactory.NewBasketItemBuilder().BuildFrom(basket.BasketItems[0]))
+                    .WithProduct(BuilderFactory.NewProductBuilder().BuildFrom(category.Products[0]).Build()).Build()
+            ]).Build();
+        var command = new BasketAddItemsCommand(basket.Id, [new BasketItemCommand(category.Id, category.Products[1].Id, 1)]);
+
+        // Act
+        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, Xunit.TestContext.Current.CancellationToken));
+
+        // Assert
+        Assert.IsType<EntityNotFoundException>(exception);
+        expectedCategory.ShouldBeInDatabase(db => db.Categories.Include(c => c.Products));
+        expectedBasket.ShouldBeInDatabase(db => db.Baskets.Include(b => b.BasketItems).ThenInclude(i => i.Product));
+    }
+
+    [Fact]
     public async Task ThrowEntityNotFoundException_WhenExecuteCalled_WithNonExistentBasket()
     {
         // Arrange
