@@ -48,7 +48,7 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
     private IQueryable<Category> BaseQuery =>
         NonDeletedEntities
             .Where(c => c.ClientId == RequestContext.ClientId)
-            .Include(c => c.Products)
-            .Include(c => c.SubCategories)
-                .ThenInclude(c => c.Products);
+            .Include(c => c.Products.Where(p => !p.IsDeleted))
+            .Include(c => c.SubCategories.Where(s => !s.IsDeleted))
+                .ThenInclude(c => c.Products.Where(p => !p.IsDeleted));
 }

@@ -7,6 +7,72 @@ namespace Demo.Model.UnitTests.Model
 {
     public class CategoryShould : ModelTest
     {
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void RejectDeletedChild_WithoutChangingCategoryGraph(bool updateProduct)
+        {
+            // Arrange
+            var category = BuilderFactory.NewCategoryBuilder()
+                .With(x => x.Products, [
+                    BuilderFactory.NewProductBuilder(1, 1).Build(),
+                    BuilderFactory.NewProductBuilder(2, 2).WithDeletedStatus().Build()
+                ])
+                .With(x => x.SubCategories, [
+                    BuilderFactory.NewCategoryBuilder(3, 3).Build(),
+                    BuilderFactory.NewCategoryBuilder(4, 4).WithDeletedStatus().Build()
+                ]).Build();
+            var expected = BuilderFactory.NewCategoryBuilder().BuildFrom(category).Build();
+
+            // Act
+            var exception = Record.Exception(() =>
+            {
+                if (updateProduct)
+                    category.UpdateProduct(category.Products[1].Id, "Updated product", 25m);
+                else
+                    category.RemoveSubCategory(category.SubCategories[1].Id);
+            });
+
+            // Assert
+            Assert.IsType<EntityNotFoundException>(exception);
+            category.ShouldBeEquivalentTo(expected);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void AllowReusingDeletedChildName_WhenAddingActiveChild(bool addProduct)
+        {
+            // Arrange
+            var category = BuilderFactory.NewCategoryBuilder()
+                .With(x => x.Products, [
+                    BuilderFactory.NewProductBuilder(1, 1).Build(),
+                    BuilderFactory.NewProductBuilder(2, 2).WithDeletedStatus().Build()
+                ])
+                .With(x => x.SubCategories, [
+                    BuilderFactory.NewCategoryBuilder(3, 3).Build(),
+                    BuilderFactory.NewCategoryBuilder(4, 4).WithDeletedStatus().Build()
+                ]).Build();
+            var expected = BuilderFactory.NewCategoryBuilder().BuildFrom(category).Build();
+            if (addProduct)
+                expected.Products.Add(BuilderFactory.NewProductBuilder()
+                    .With(x => x.CategoryId, category.Id)
+                    .With(x => x.Name, category.Products[1].Name).With(x => x.Price, 25m).Build());
+            else
+                expected.SubCategories.Add(BuilderFactory.NewCategoryBuilder()
+                    .With(x => x.ParentCategoryId, (int?)category.Id)
+                    .With(x => x.Name, category.SubCategories[1].Name).Build());
+
+            // Act
+            if (addProduct)
+                category.AddProduct(category.Products[1].Name, 25m);
+            else
+                category.AddSubCategory(category.SubCategories[1].Name);
+
+            // Assert
+            category.ShouldBeEquivalentTo(expected);
+        }
+
         [Fact]
         public void StoreCorrectValues_When_UpdateCalled()
         {

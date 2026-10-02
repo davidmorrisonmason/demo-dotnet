@@ -6,6 +6,7 @@ using Demo.Model.UnitTests;
 using Demo.Model.UnitTests.Builders.Domain;
 using Demo.Model.UnitTests.Database;
 using Demo.Model.UnitTests.Validation;
+using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Json;
 
 namespace Demo.Api.IntegrationTests.Endpoints;
@@ -15,6 +16,50 @@ public class CategoriesEndpointShould : DemoApiIntegrationTest
 {
     public CategoriesEndpointShould(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)
     {
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ExcludeDeletedChildren_WhenReadingCategoryAfterRemovingSubCategory(bool listCategories)
+    {
+        // Arrange
+        var category = BuilderFactory.NewCategoryBuilder()
+            .WithProducts([
+                BuilderFactory.NewProductBuilder(1).Build(),
+                BuilderFactory.NewProductBuilder(2).WithDeletedStatus().Build()
+            ])
+            .WithSubCategories([
+                BuilderFactory.NewCategoryBuilder(2).WithProducts([
+                    BuilderFactory.NewProductBuilder(3).Build()
+                ]).Build(),
+                BuilderFactory.NewCategoryBuilder(3).WithProducts([
+                    BuilderFactory.NewProductBuilder(4).Build()
+                ]).Build()
+            ]).BuildAndPersist();
+        var removedChild = category.SubCategories[1];
+        var expectedReadGraph = ((CategoryBuilder)BuilderFactory.NewCategoryBuilder().BuildFrom(category))
+            .WithProducts([BuilderFactory.NewProductBuilder().BuildFrom(category.Products[0]).Build()])
+            .WithSubCategories([BuilderFactory.NewCategoryBuilder().BuildFrom(category.SubCategories[0]).Build()])
+            .Build();
+        var expectedResponse = CategoryDtoBuilder.BuildFromCategory(expectedReadGraph).Build();
+        var expectedStoredGraph = BuilderFactory.NewCategoryBuilder().BuildFrom(category).Build();
+        expectedStoredGraph.SubCategories[1].IsDeleted = true;
+        expectedStoredGraph.SubCategories[1].Products[0].IsDeleted = true;
+        var route = listCategories ? $"{BaseUrl}/Categories" : $"{BaseUrl}/Categories/{category.Id}";
+
+        // Act
+        var deletionResponse = await Client.DeleteAsync($"{BaseUrl}/Categories/{category.Id}/SubCategories/{removedChild.Id}", Xunit.TestContext.Current.CancellationToken);
+        var response = await Client.GetAsync(route, Xunit.TestContext.Current.CancellationToken);
+
+        // Assert
+        deletionResponse.ShouldBeNoContentResponse();
+        if (listCategories)
+            response.ShouldBeOkListResponse(new[] { expectedResponse });
+        else
+            response.ShouldBeOkResponse(expectedResponse);
+        expectedStoredGraph.ShouldBeInDatabase(db => db.Categories
+            .Include(c => c.Products).Include(c => c.SubCategories).ThenInclude(c => c.Products));
     }
 
     #region List

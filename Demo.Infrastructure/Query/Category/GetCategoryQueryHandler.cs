@@ -20,8 +20,9 @@ public class GetCategoryQueryHandler : SingleQueryHandler<GetCategoryQuery, GetC
     protected override async Task<Model.Domain.Category?> DoQuery(GetCategoryQuery query)
     {
         var category = await BaseQuery
-            .Include(c => c.Products)
-            .Include(c => c.SubCategories)
+            .AsNoTracking()
+            .Include(c => c.Products.Where(p => !p.IsDeleted))
+            .Include(c => c.SubCategories.Where(s => !s.IsDeleted))
             .Where(x => x.Id == query.Id)
             .FirstOrDefaultAsync();
 

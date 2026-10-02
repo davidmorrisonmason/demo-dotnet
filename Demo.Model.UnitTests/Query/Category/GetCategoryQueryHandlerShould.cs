@@ -23,14 +23,56 @@ namespace Demo.Model.UnitTests.Query.Category
         }
 
         [Fact]
+        public async Task ExcludeDeletedChildren_WhenLoadingCategoryGraph_WithDeletedEntitiesAlreadyTracked()
+        {
+            // Arrange
+            var category = BuilderFactory.NewCategoryBuilder()
+                .With(x => x.Products, [
+                    BuilderFactory.NewProductBuilder(1).Build(),
+                    BuilderFactory.NewProductBuilder(2).WithDeletedStatus().Build()
+                ])
+                .With(x => x.SubCategories, [
+                    BuilderFactory.NewCategoryBuilder(2).Build(),
+                    BuilderFactory.NewCategoryBuilder(3).WithDeletedStatus().Build()
+                ])
+                .BuildAndPersist();
+            var expected = BuilderFactory.NewCategoryBuilder().BuildFrom(category)
+                .With(x => x.Products, [BuilderFactory.NewProductBuilder().BuildFrom(category.Products[0]).Build()])
+                .With(x => x.SubCategories, [BuilderFactory.NewCategoryBuilder().BuildFrom(category.SubCategories[0]).Build()])
+                .Build();
+            using var dbContext = new ApplicationDbContext(DbContextOptions);
+            dbContext.Products.ToList();
+            dbContext.Categories.ToList();
+            using var queryHandler = new GetCategoryQueryHandler(dbContext, new GetCategoryQueryValidator(),
+                Substitute.For<ILogger<GetCategoryQueryHandler>>(), TestRequestContext);
+
+            // Act
+            var actual = await queryHandler.Handle(new GetCategoryQuery(category.Id), Xunit.TestContext.Current.CancellationToken);
+
+            // Assert
+            actual.ShouldBeEquivalentTo(expected);
+        }
+
+        [Fact]
         public async Task ReturnCategory_When_Exists()
         {
             // Arrange
             var original = BuilderFactory.NewCategoryBuilder()
-                .BuildAndPersist();
+                .With(x => x.Products, [
+                    BuilderFactory.NewProductBuilder(1).Build(),
+                    BuilderFactory.NewProductBuilder(2).WithDeletedStatus().Build()])
+                .With(x => x.SubCategories, [
+                    BuilderFactory.NewCategoryBuilder(2).Build(),
+                    BuilderFactory.NewCategoryBuilder(3).WithDeletedStatus().Build()
+                ])
+            .BuildAndPersist();
 
             var expected = BuilderFactory.NewCategoryBuilder()
                 .BuildFrom(original)
+                .With(x => x.Products, [
+                    BuilderFactory.NewProductBuilder().BuildFrom(original.Products[0]).Build() ])
+                .With(x => x.SubCategories, [
+                    BuilderFactory.NewCategoryBuilder().BuildFrom(original.SubCategories[0]).Build() ])
                 .Build();
 
             // Act
