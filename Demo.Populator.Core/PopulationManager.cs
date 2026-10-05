@@ -28,7 +28,12 @@ public class PopulationManager : IPopulationManager
     {
         _logger.LogInformation("Truncating database");
 
-        _dbContext.Database.ExecuteSql($"DELETE FROM Categories");
+        _dbContext.Database.ExecuteSql($"TRUNCATE TABLE CheckoutCompletions");
+        _dbContext.Database.ExecuteSql($"TRUNCATE TABLE BasketItems");
+        _dbContext.Database.ExecuteSql($"TRUNCATE TABLE Baskets");
+        _dbContext.Database.ExecuteSql($"TRUNCATE TABLE Products");
+        _dbContext.Database.ExecuteSql($"TRUNCATE TABLE Products");
+        _dbContext.Database.ExecuteSql($"TRUNCATE TABLE Categories");
         _dbContext.Database.ExecuteSql($"DELETE FROM Clients");
 
         _logger.LogInformation("Database truncation complete");

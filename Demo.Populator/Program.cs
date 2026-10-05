@@ -6,7 +6,6 @@ using Demo.DomainServices.Encryption;
 using Demo.DomainServices.Interface.Command.Category;
 using Demo.DomainServices.Interface.Context;
 using Demo.DomainServices.Interface.Encryption;
-using Demo.DomainServices.Interface.Query.Category;
 using Demo.DomainServices.Interface.Repository;
 using Demo.DomainServices.Interface.Time;
 using Demo.DomainServices.Interface.Transaction;
@@ -18,6 +17,7 @@ using Demo.Infrastructure.Repository;
 using Demo.Populator.Core;
 using Demo.Populator.Core.Interfaces;
 using Demo.Populator.Core.Populators;
+using Demo.Model.Logging;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,12 +38,13 @@ builder.Services.AddMediator(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(GetCategoriesQueryHandler).Assembly);
 });
 
-builder.Services.AddValidatorsFromAssembly(typeof(GetCategoriesQuery).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(GetCategoriesQueryHandler).Assembly);
 builder.Services.AddValidatorsFromAssembly(typeof(CategoryCreateCommand).Assembly);
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+builder.Services.AddScoped<ICheckoutCompletionRepository, CheckoutCompletionRepository>();
 builder.Services.AddSingleton<IAggregateRootFactory, AggregateRootFactory>();
 
 builder.Services.AddScoped<IPopulationManager, PopulationManager>();
@@ -56,7 +57,9 @@ builder.Services.AddSingleton<ITimeService, TimeService>();
 builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
 builder.Services.AddScoped<IRequestContext, RequestContext>();
 
-var provider = builder.Services.BuildServiceProvider();
+using var host = builder.Build();
+using var scope = host.Services.CreateScope();
+DomainContext.Setup(scope.ServiceProvider);
 
-var populationManager = provider.GetRequiredService<IPopulationManager>();
+var populationManager = scope.ServiceProvider.GetRequiredService<IPopulationManager>();
 await populationManager.DoPopulation();
