@@ -7,6 +7,8 @@ public class TestContext
 {
     private static DbContextOptions<ApplicationDbContext>? _dbContextOptions;
 
+    public static int TestClientId { get; set; } = 1;
+
     public static void SetupDbContext(DbContextOptions<ApplicationDbContext> dbContextOptions)
     {
         _dbContextOptions = dbContextOptions;

@@ -1,17 +1,17 @@
 using Demo.Api.Dto;
+using Demo.Api.Integration.Tests.Database;
 using Demo.Api.IntegrationTests.Builders;
 using Demo.ApplicationServices.Command.Category;
 using Demo.Model.Domain;
 using Demo.Model.UnitTests;
 using Demo.Model.UnitTests.Builders.Domain;
-using Demo.Model.UnitTests.Database;
 using Demo.Model.UnitTests.Validation;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Json;
 
 namespace Demo.Api.IntegrationTests.Endpoints;
 
-[Collection(ModelTestsDatabaseTestCollection.Name)]
+[Collection(ApiIntegrationTestDatabaseTestCollection.Name)]
 public class CategoriesEndpointShould : DemoApiIntegrationTest
 {
     public CategoriesEndpointShould(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)

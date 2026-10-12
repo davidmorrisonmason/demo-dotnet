@@ -1,8 +1,8 @@
-﻿using Demo.Infrastructure.Data;
+using Demo.Infrastructure.Data;
 using Demo.Model.Domain;
 using Demo.Model.UnitTests;
 using Demo.Model.UnitTests.Builders.Domain;
-using Demo.Model.UnitTests.Database;
+using Demo.Infrastructure.Tests.Database;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 

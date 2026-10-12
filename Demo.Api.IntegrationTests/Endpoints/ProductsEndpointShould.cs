@@ -1,15 +1,15 @@
 using Demo.Api.Dto;
+using Demo.Api.Integration.Tests.Database;
 using Demo.ApplicationServices.Command.Category;
 using Demo.Model.Domain;
 using Demo.Model.UnitTests;
-using Demo.Model.UnitTests.Database;
 using Demo.Model.UnitTests.Validation;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Json;
 
 namespace Demo.Api.IntegrationTests.Endpoints;
 
-[Collection(ModelTestsDatabaseTestCollection.Name)]
+[Collection(ApiIntegrationTestDatabaseTestCollection.Name)]
 public class ProductsEndpointShould : DemoApiIntegrationTest
 {
     public ProductsEndpointShould(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)

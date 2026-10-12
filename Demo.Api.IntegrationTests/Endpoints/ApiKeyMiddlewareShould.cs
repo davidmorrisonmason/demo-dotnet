@@ -1,9 +1,9 @@
-using Demo.Model.UnitTests.Database;
+using Demo.Api.Integration.Tests.Database;
 using System.Net;
 
 namespace Demo.Api.IntegrationTests.Endpoints;
 
-[Collection(ModelTestsDatabaseTestCollection.Name)]
+[Collection(ApiIntegrationTestDatabaseTestCollection.Name)]
 public class ApiKeyMiddlewareShould : DemoApiIntegrationTest
 {
     public ApiKeyMiddlewareShould(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)

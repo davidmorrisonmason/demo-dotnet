@@ -11,8 +11,8 @@ namespace Demo.Model.UnitTests.Builders.Domain
             propertySeed,
             null))
         {
-            // autoseed client ID with the client associated with DatabaseTest so that we don't need to litter the code with client ID
-            With(c => c.ClientId, DatabaseTest.TestClientId);
+            // Seed the client ID from the shared test context.
+            With(c => c.ClientId, TestContext.TestClientId);
         }
 
         public CategoryBuilder WithProducts(IEnumerable<Product> products)

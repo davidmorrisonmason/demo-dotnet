@@ -5,7 +5,7 @@ namespace Demo.Model.UnitTests.Builders.Domain;
 
 public class BasketBuilder : DomainObjectBuilder<Basket>
 {
-    public BasketBuilder(BuilderFactory builderFactory, int databaseSeed, int propertySeed) : base(builderFactory, new Basket(databaseSeed, DateTime.UtcNow, DatabaseTest.TestClientId))
+    public BasketBuilder(BuilderFactory builderFactory, int databaseSeed, int propertySeed) : base(builderFactory, new Basket(databaseSeed, DateTime.UtcNow, TestContext.TestClientId))
     {
         With(b => b.BasketExpirationTime, DateTime.UtcNow.AddMinutes(20));
     }

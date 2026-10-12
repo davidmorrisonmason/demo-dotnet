@@ -403,3 +403,5 @@ FodyWeavers.xsd
 /Databases/demo.db-wal
 /Databases/ModelTestDatabase.db
 /Databases/ApiIntegrationTestDatabase.db
+/Databases/ApplicationServicesIntegrationTestDatabase.db
+/Databases/InfrastructureTestDatabase.db

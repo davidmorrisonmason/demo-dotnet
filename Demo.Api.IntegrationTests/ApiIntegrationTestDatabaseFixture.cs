@@ -1,4 +1,4 @@
-using Demo.Model.UnitTests.Database;
+using Demo.Infrastructure.Tests.Database;
 
 namespace Demo.Api.IntegrationTests;
 
