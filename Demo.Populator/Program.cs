@@ -1,4 +1,4 @@
-﻿using Demo.DomainServices.Configuration;
+﻿using Demo.ApplicationServices.Configuration;
 using Demo.DomainServices.Context;
 using Demo.DomainServices.Creation;
 using Demo.DomainServices.DependencyInjection;

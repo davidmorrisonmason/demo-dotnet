@@ -1,4 +1,4 @@
-﻿namespace Demo.DomainServices.Configuration;
+﻿namespace Demo.ApplicationServices.Configuration;
 
 public class BasketSettings
 {

@@ -1,6 +1,6 @@
 using Demo.Api.Configuration;
 using Demo.ApplicationServices.Command.Category;
-using Demo.DomainServices.Configuration;
+using Demo.ApplicationServices.Configuration;
 using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Logging;
 using Demo.Infrastructure.Query.Category;
