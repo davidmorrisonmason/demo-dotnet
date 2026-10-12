@@ -1,4 +1,4 @@
-﻿namespace Demo.DomainServices.Interface.Orchestration;
+﻿namespace Demo.ApplicationServices.Interface.Orchestration;
 
 /// <summary>
 /// Handler interface for request handlers that don't return a result

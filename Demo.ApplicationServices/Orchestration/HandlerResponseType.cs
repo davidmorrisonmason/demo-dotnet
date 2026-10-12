@@ -1,4 +1,4 @@
-﻿namespace Demo.DomainServices.DependencyInjection;
+﻿namespace Demo.ApplicationServices.Orchestration;
 
 public enum HandlerResponseType
 {

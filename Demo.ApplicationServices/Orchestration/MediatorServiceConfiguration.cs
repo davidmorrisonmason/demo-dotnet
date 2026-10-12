@@ -1,7 +1,7 @@
-﻿using Demo.DomainServices.Interface.Orchestration;
+﻿using Demo.ApplicationServices.Interface.Orchestration;
 using System.Reflection;
 
-namespace Demo.DomainServices.DependencyInjection;
+namespace Demo.ApplicationServices.Orchestration;
 
 /// <summary>
 /// Configuration class for mediator configuration

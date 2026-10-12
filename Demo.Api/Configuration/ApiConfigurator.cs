@@ -4,7 +4,7 @@ using Demo.Api.Swagger;
 using Demo.Api.Validation;
 using Demo.DomainServices.Context;
 using Demo.DomainServices.Creation;
-using Demo.DomainServices.DependencyInjection;
+using Demo.ApplicationServices.Orchestration;
 using Demo.DomainServices.Encryption;
 using Demo.DomainServices.Interface.Context;
 using Demo.DomainServices.Interface.Encryption;

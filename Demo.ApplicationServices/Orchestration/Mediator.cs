@@ -1,6 +1,6 @@
-﻿using Demo.DomainServices.Interface.Orchestration;
+﻿using Demo.ApplicationServices.Interface.Orchestration;
 
-namespace Demo.DomainServices.Orchestration;
+namespace Demo.ApplicationServices.Orchestration;
 
 public class Mediator : IMediator
 {

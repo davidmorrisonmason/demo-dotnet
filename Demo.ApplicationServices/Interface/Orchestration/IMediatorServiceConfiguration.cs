@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Demo.DomainServices.Interface.Orchestration;
+namespace Demo.ApplicationServices.Interface.Orchestration;
 
 public interface IMediatorServiceConfiguration
 {

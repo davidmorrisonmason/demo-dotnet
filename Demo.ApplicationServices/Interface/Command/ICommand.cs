@@ -1,4 +1,4 @@
-﻿using Demo.DomainServices.Interface.Orchestration;
+﻿using Demo.ApplicationServices.Interface.Orchestration;
 
 namespace Demo.ApplicationServices.Interface.Command;
 

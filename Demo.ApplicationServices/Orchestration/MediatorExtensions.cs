@@ -1,8 +1,7 @@
-﻿using Demo.DomainServices.Interface.Orchestration;
-using Demo.DomainServices.Orchestration;
+﻿using Demo.ApplicationServices.Interface.Orchestration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Demo.DomainServices.DependencyInjection;
+namespace Demo.ApplicationServices.Orchestration;
 
 public static class MediatorExtensions
 {

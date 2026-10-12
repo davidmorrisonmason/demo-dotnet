@@ -1,5 +1,5 @@
 ﻿using Demo.DomainServices.Interface.Context;
-using Demo.DomainServices.Interface.Orchestration;
+using Demo.ApplicationServices.Interface.Orchestration;
 using Demo.ApplicationServices.Interface.Query;
 using Demo.Infrastructure.Data;
 using Demo.Model.Domain;
