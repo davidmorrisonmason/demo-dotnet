@@ -1,5 +1,4 @@
 using Demo.Api.Dto;
-using Demo.Api.Integration.Tests.Database;
 using Demo.Infrastructure.Data;
 using Demo.Model.Domain.Checkout;
 using Demo.Model.UnitTests;
@@ -10,7 +9,7 @@ using System.Net.Http.Json;
 
 namespace Demo.Api.IntegrationTests.Endpoints;
 
-[Collection(ApiIntegrationTestDatabaseTestCollection.Name)]
+[Collection(ApiDatabaseTestCollectionDefinition.Name)]
 public class BasketsEndpointShould : DemoApiIntegrationTest
 {
     public BasketsEndpointShould(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)

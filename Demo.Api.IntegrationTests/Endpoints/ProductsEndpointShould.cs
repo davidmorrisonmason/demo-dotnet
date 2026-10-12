@@ -1,5 +1,4 @@
 using Demo.Api.Dto;
-using Demo.Api.Integration.Tests.Database;
 using Demo.ApplicationServices.Command.Category;
 using Demo.Model.Domain;
 using Demo.Model.UnitTests;
@@ -9,7 +8,7 @@ using System.Net.Http.Json;
 
 namespace Demo.Api.IntegrationTests.Endpoints;
 
-[Collection(ApiIntegrationTestDatabaseTestCollection.Name)]
+[Collection(ApiDatabaseTestCollectionDefinition.Name)]
 public class ProductsEndpointShould : DemoApiIntegrationTest
 {
     public ProductsEndpointShould(ApiIntegrationTestDatabaseFixture databaseFixture) : base(databaseFixture)

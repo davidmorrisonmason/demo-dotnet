@@ -1,10 +1,8 @@
-using Demo.Api.Integration.Tests.Database;
-using Demo.Api.IntegrationTests;
-
-namespace Demo.Api.IntegrationTest;
+namespace Demo.Api.IntegrationTests;
 
 // xUnit discovers collection definitions by reflection within each test assembly.
-[CollectionDefinition(ApiIntegrationTestDatabaseTestCollection.Name, DisableParallelization = true)]
+[CollectionDefinition(Name, DisableParallelization = true)]
 public class ApiDatabaseTestCollectionDefinition : ICollectionFixture<ApiIntegrationTestDatabaseFixture>
 {
+    public const string Name = "ApiIntegrationTestDatabaseTest";
 }
