@@ -1,6 +1,6 @@
 using Demo.DomainServices.Interface.Context;
 using Demo.DomainServices.Interface.Encryption;
-using Demo.DomainServices.Interface.Query.Client;
+using Demo.ApplicationServices.Interface.Query.Client;
 using Demo.Infrastructure.Data;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;

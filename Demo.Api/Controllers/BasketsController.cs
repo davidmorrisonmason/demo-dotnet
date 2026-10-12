@@ -1,7 +1,7 @@
 using Demo.Api.Dto;
-using Demo.DomainServices.Interface.Command.Checkout;
+using Demo.ApplicationServices.Interface.Command.Checkout;
 using Demo.DomainServices.Interface.Orchestration;
-using Demo.DomainServices.Interface.Query.Checkout;
+using Demo.ApplicationServices.Interface.Query.Checkout;
 using Demo.Model.Domain.Checkout;
 using Microsoft.AspNetCore.Mvc;
 

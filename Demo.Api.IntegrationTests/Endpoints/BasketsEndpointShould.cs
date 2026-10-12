@@ -316,7 +316,7 @@ public class BasketsEndpointShould : DemoApiIntegrationTest
 
         // Assert
         response.ShouldBeModelValidationErrorResponse(
-            Demo.DomainServices.Command.Checkout.BasketCommandErrorType.Basket_Items_Required.BuildErrorMessage());
+            Demo.ApplicationServices.Command.Checkout.BasketCommandErrorType.Basket_Items_Required.BuildErrorMessage());
     }
 
 

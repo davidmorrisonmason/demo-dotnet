@@ -1,6 +1,6 @@
-using Demo.DomainServices.Command.Checkout;
+using Demo.ApplicationServices.Command.Checkout;
 using Demo.DomainServices.Creation;
-using Demo.DomainServices.Interface.Command.Checkout;
+using Demo.ApplicationServices.Interface.Command.Checkout;
 using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Repository;
 using Demo.Model.Domain.Checkout;

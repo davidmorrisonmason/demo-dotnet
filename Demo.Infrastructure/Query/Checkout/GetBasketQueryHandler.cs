@@ -1,5 +1,5 @@
 using Demo.DomainServices.Interface.Context;
-using Demo.DomainServices.Interface.Query.Checkout;
+using Demo.ApplicationServices.Interface.Query.Checkout;
 using Demo.DomainServices.Interface.Time;
 using Demo.Infrastructure.Data;
 using Demo.Model.Domain.Checkout;

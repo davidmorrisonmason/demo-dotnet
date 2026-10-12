@@ -1,5 +1,5 @@
 using Demo.Api.Dto;
-using Demo.DomainServices.Command.Category;
+using Demo.ApplicationServices.Command.Category;
 using Demo.Model.Domain;
 using Demo.Model.UnitTests;
 using Demo.Model.UnitTests.Database;

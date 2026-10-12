@@ -1,5 +1,5 @@
-using Demo.DomainServices.Command.Checkout;
-using Demo.DomainServices.Interface.Command.Checkout;
+using Demo.ApplicationServices.Command.Checkout;
+using Demo.ApplicationServices.Interface.Command.Checkout;
 using Demo.DomainServices.Interface.Repository;
 using Demo.DomainServices.Interface.Time;
 using Demo.Infrastructure.Data;

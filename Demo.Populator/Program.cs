@@ -3,10 +3,9 @@ using Demo.DomainServices.Context;
 using Demo.DomainServices.Creation;
 using Demo.DomainServices.DependencyInjection;
 using Demo.DomainServices.Encryption;
-using Demo.DomainServices.Interface.Command.Category;
+using Demo.ApplicationServices.Interface.Command.Category;
 using Demo.DomainServices.Interface.Context;
 using Demo.DomainServices.Interface.Encryption;
-using Demo.DomainServices.Interface.Query.Category;
 using Demo.DomainServices.Interface.Repository;
 using Demo.DomainServices.Interface.Time;
 using Demo.DomainServices.Interface.Transaction;
@@ -42,7 +41,7 @@ builder.Services.AddMediator(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(GetCategoriesQueryHandler).Assembly);
 });
 
-builder.Services.AddValidatorsFromAssembly(typeof(GetCategoriesQuery).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(GetCategoriesQueryHandler).Assembly);
 builder.Services.AddValidatorsFromAssembly(typeof(CategoryCreateCommand).Assembly);
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();

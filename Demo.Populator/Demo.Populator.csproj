@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Demo.ApplicationServices\Demo.ApplicationServices.csproj" />
     <ProjectReference Include="..\Demo.Populator.Core\Demo.Populator.Core.csproj" />
   </ItemGroup>
 

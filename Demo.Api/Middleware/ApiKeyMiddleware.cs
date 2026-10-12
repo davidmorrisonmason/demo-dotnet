@@ -1,7 +1,7 @@
 using Demo.DomainServices.Interface.Context;
 using Demo.DomainServices.Interface.Encryption;
 using Demo.DomainServices.Interface.Orchestration;
-using Demo.DomainServices.Interface.Query.Client;
+using Demo.ApplicationServices.Interface.Query.Client;
 using Demo.Model.Domain.Exceptions;
 using Demo.Model.Utils;
 using Demo.Model.Validation;

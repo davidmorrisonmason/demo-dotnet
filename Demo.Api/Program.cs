@@ -1,5 +1,5 @@
 using Demo.Api.Configuration;
-using Demo.DomainServices.Command.Category;
+using Demo.ApplicationServices.Command.Category;
 using Demo.DomainServices.Configuration;
 using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Logging;

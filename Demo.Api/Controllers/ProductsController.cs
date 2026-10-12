@@ -1,5 +1,5 @@
 ﻿using Demo.Api.Dto;
-using Demo.DomainServices.Interface.Command.Category;
+using Demo.ApplicationServices.Interface.Command.Category;
 using Demo.DomainServices.Interface.Orchestration;
 using Demo.Model.Domain;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,4 @@
-﻿using Demo.DomainServices.Interface.Query.Category;
+﻿using Demo.ApplicationServices.Interface.Query.Category;
 using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Query.Category;
 using Microsoft.Extensions.Logging;

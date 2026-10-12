@@ -1,5 +1,5 @@
 ﻿using Demo.Api.Dto;
-using Demo.DomainServices.Interface.Command;
+using Demo.ApplicationServices.Interface.Command;
 using Demo.DomainServices.Interface.Orchestration;
 using Demo.Model.Domain;
 using Demo.Model.Validation;

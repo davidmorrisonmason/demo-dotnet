@@ -1,4 +1,4 @@
-using Demo.DomainServices.Interface.Command.Client;
+using Demo.ApplicationServices.Interface.Command.Client;
 using Demo.DomainServices.Interface.Encryption;
 using Demo.DomainServices.Interface.Orchestration;
 using Demo.Model.Domain;

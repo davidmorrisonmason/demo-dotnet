@@ -1,5 +1,5 @@
 ﻿using Demo.DomainServices.Interface.Orchestration;
-using Demo.DomainServices.Interface.Query;
+using Demo.ApplicationServices.Interface.Query;
 using Demo.Infrastructure.Data;
 using Demo.Model.Domain;
 using FluentValidation;

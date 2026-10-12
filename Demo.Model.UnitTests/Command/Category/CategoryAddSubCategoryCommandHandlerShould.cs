@@ -1,5 +1,5 @@
-using Demo.DomainServices.Command.Category;
-using Demo.DomainServices.Interface.Command.Category;
+using Demo.ApplicationServices.Command.Category;
+using Demo.ApplicationServices.Interface.Command.Category;
 using Demo.DomainServices.Interface.Repository;
 using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Repository;

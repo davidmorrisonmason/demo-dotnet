@@ -1,5 +1,5 @@
 ﻿using Demo.DomainServices.Interface.Context;
-using Demo.DomainServices.Interface.Query.Category;
+using Demo.ApplicationServices.Interface.Query.Category;
 using Demo.Infrastructure.Data;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;

@@ -1,5 +1,5 @@
 using Demo.DomainServices.Interface.Encryption;
-using Demo.DomainServices.Interface.Query.Client;
+using Demo.ApplicationServices.Interface.Query.Client;
 using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Query.Client;
 using Microsoft.Extensions.Logging;

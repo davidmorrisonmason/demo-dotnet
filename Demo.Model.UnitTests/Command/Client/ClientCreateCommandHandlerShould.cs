@@ -1,6 +1,6 @@
-using Demo.DomainServices.Command.Client;
+using Demo.ApplicationServices.Command.Client;
 using Demo.DomainServices.Creation;
-using Demo.DomainServices.Interface.Command.Client;
+using Demo.ApplicationServices.Interface.Command.Client;
 using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Repository;
 using Demo.Model.Domain.Validation;
