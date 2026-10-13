@@ -32,7 +32,7 @@ LoggingUtilities.ConfigureLogging(builder.Services, configuration);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddMediator(cfg =>

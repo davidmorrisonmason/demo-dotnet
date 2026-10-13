@@ -5,6 +5,8 @@ using Demo.Model.UnitTests.Builders.Domain;
 using Demo.Infrastructure.Tests.Database;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Demo.Api.IntegrationTests;
 
@@ -22,6 +24,11 @@ public class DemoApiIntegrationTest : DatabaseTest, IClassFixture<WebApplication
             .WithWebHostBuilder(builder =>
             {
                 builder.UseEnvironment("ApiIntegrationTests");
+                builder.ConfigureServices(services =>
+                {
+                    services.RemoveAll<ApplicationDbContext>();
+                    services.AddScoped(_ => new ApplicationDbContext(databaseFixture.DbContextOptions));
+                });
             });
         _httpClient = _factory.CreateClient();
 

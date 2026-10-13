@@ -19,7 +19,7 @@ ApiConfigurator.ConfigureServices(builder.Services, typeof(GetCategoriesQueryHan
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
 });
 
 

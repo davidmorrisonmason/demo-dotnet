@@ -25,7 +25,6 @@ public class BasketItemCreateDto
 
 public class BasketDto : EntityDto
 {
-    public string BasketId { get; set; } = "";
     public DateTime BasketExpirationTime { get; set; } = DateTime.UtcNow;
     public List<BasketItemDto> BasketItems { get; set; } = [];
     public decimal TotalPrice { get; set; } = 0;

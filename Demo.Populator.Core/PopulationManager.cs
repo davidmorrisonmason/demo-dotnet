@@ -28,6 +28,9 @@ public class PopulationManager : IPopulationManager
     {
         _logger.LogInformation("Truncating database");
 
+        _dbContext.Database.ExecuteSql($"DELETE FROM BasketItems");
+        _dbContext.Database.ExecuteSql($"DELETE FROM CheckoutCompletions");
+        _dbContext.Database.ExecuteSql($"DELETE FROM Baskets");
         _dbContext.Database.ExecuteSql($"DELETE FROM Categories");
         _dbContext.Database.ExecuteSql($"DELETE FROM Clients");
 

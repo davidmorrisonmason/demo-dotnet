@@ -48,7 +48,8 @@ public class ApplicationDbContext : DbContext
             product.Property(p => p.Name)
                 .HasMaxLength(255);
 
-            product.Property(p => p.Price);
+            product.Property(p => p.Price)
+                .HasPrecision(18, 2);
         });
 
         modelBuilder.Entity<BasketItem>(basketItem =>
@@ -62,7 +63,9 @@ public class ApplicationDbContext : DbContext
 
             basketItem.HasOne(b => b.Product)
                 .WithMany()
-                .HasForeignKey(b => b.ProductId);
+                .HasForeignKey(b => b.ProductId)
+                // Basket deletion owns item cleanup; avoid two cascade paths from Clients.
+                .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<Basket>(basket =>
