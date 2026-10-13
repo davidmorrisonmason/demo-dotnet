@@ -122,6 +122,11 @@ public class Category : DomainObject, IAggregateRoot
         {
             product.OnDeleted();
         }
+
+        foreach (var subCategory in SubCategories)
+        {
+            subCategory.OnDeleted();
+        }
     }
 
     private void ValidateProductNameUnique(string name, int? excludeId = null)

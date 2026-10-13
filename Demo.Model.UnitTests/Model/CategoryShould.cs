@@ -379,6 +379,46 @@ namespace Demo.Model.UnitTests.Model
         }
 
         [Fact]
+        public void SoftDeleteCategoryAndDescendants_When_OnDeletedCalled()
+        {
+            // Arrange
+            var grandchild = BuilderFactory.NewCategoryBuilder(3, 3)
+                .With(x => x.Products, [BuilderFactory.NewProductBuilder(3, 3).Build()])
+                .Build();
+            var child = BuilderFactory.NewCategoryBuilder(1, 1)
+                .With(x => x.Products, [BuilderFactory.NewProductBuilder(1, 1).Build()])
+                .With(x => x.SubCategories, [grandchild])
+                .Build();
+            var sibling = BuilderFactory.NewCategoryBuilder(2, 2)
+                .With(x => x.Products, [BuilderFactory.NewProductBuilder(2, 2).Build()])
+                .Build();
+            var original = BuilderFactory.NewCategoryBuilder()
+                .With(x => x.Products, [BuilderFactory.NewProductBuilder(4, 4).Build()])
+                .With(x => x.SubCategories, [child, sibling])
+                .Build();
+            var expected = BuilderFactory.NewCategoryBuilder().BuildFrom(original).Build();
+            var expectedCategories = new[]
+            {
+                expected,
+                expected.SubCategories[0],
+                expected.SubCategories[1],
+                expected.SubCategories[0].SubCategories[0]
+            };
+            foreach (var category in expectedCategories)
+            {
+                category.IsDeleted = true;
+                foreach (var product in category.Products)
+                    product.IsDeleted = true;
+            }
+
+            // Act
+            original.OnDeleted();
+
+            // Assert
+            original.ShouldBeEquivalentTo(expected);
+        }
+
+        [Fact]
         public void SoftDeleteCategoryAndItsProducts_When_OnDeletedCalled()
         {
             // Arrange
