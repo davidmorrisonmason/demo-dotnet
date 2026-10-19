@@ -1,9 +1,9 @@
 ﻿using Demo.ApplicationServices.Configuration;
+using Demo.ApplicationServices.Interface.Command.Category;
+using Demo.ApplicationServices.Orchestration;
 using Demo.DomainServices.Context;
 using Demo.DomainServices.Creation;
-using Demo.ApplicationServices.Orchestration;
 using Demo.DomainServices.Encryption;
-using Demo.ApplicationServices.Interface.Command.Category;
 using Demo.DomainServices.Interface.Context;
 using Demo.DomainServices.Interface.Encryption;
 using Demo.DomainServices.Interface.Repository;
@@ -22,9 +22,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Reflection;
 
 var builder = Host.CreateApplicationBuilder(args);
 var configuration = builder.Configuration;
+
+configuration
+    .AddUserSecrets(Assembly.GetExecutingAssembly());
 
 builder.Services.Configure<BasketSettings>(configuration.GetSection(nameof(BasketSettings)));
 
