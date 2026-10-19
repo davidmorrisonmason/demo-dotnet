@@ -31,6 +31,7 @@ public class PopulationManager : IPopulationManager
         _dbContext.Database.ExecuteSql($"DELETE FROM BasketItems");
         _dbContext.Database.ExecuteSql($"DELETE FROM CheckoutCompletions");
         _dbContext.Database.ExecuteSql($"DELETE FROM Baskets");
+        _dbContext.Database.ExecuteSql($"DELETE FROM Products");
         _dbContext.Database.ExecuteSql($"DELETE FROM Categories");
         _dbContext.Database.ExecuteSql($"DELETE FROM Clients");
 

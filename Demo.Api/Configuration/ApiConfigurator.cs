@@ -2,9 +2,9 @@
 using Demo.Api.Response;
 using Demo.Api.Swagger;
 using Demo.Api.Validation;
+using Demo.ApplicationServices.Orchestration;
 using Demo.DomainServices.Context;
 using Demo.DomainServices.Creation;
-using Demo.ApplicationServices.Orchestration;
 using Demo.DomainServices.Encryption;
 using Demo.DomainServices.Interface.Context;
 using Demo.DomainServices.Interface.Encryption;
@@ -167,6 +167,8 @@ namespace Demo.Api.Configuration
 
             // Apply SQL Server migrations and populate the database on production startup.
             // The populator dependency and startup seeding are purely for demo purposes.
+            // Clearly this code has no place in a production api startup, but we just want some clean data
+            // every time we deploy this demo API.
             if (app.Environment.IsProduction())
             {
                 using (var scope = app.Services.CreateScope())
