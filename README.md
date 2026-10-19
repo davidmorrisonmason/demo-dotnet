@@ -21,10 +21,10 @@ Tests can be run locally within Visual Studio.
 Tests use SQLite rather than SQL Server. This is to allow unit tests to run on Azure build agents without the need to connect to a SQL Server test instance (i.e. a nice cheap setup that can be
 run on the free tier). The tests create local SQLite databases and then execute against them. These are ignored in the solution and created as needed.
 
-# Build
+## Build
 The solution contains an Azure Devops pipeline for building and running the tests. Just create a pipeline and then link it to the yaml file in the root directory. It will then run without further setup.
 
-# Deployment
+## Deployment
 The solution contains an Azure Devops pipeline for deploying to Azure App Service. For this to work, you need the following variables set up on your pipeline:
 
 * $(AzureSubscription) e.g. My Azure Subscription Name(GUID ID HERE)
