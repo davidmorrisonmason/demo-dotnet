@@ -1,12 +1,11 @@
-﻿using Demo.Infrastructure.Data;
+﻿using Demo.DomainServices.Interface.Context;
+using Demo.Infrastructure.Data;
 using Demo.Model.Domain;
 using Demo.Model.Domain.Validation;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-
-using Demo.DomainServices.Context;
-using Demo.DomainServices.Interface.Context;
 
 namespace Demo.Infrastructure.Query;
 
@@ -36,6 +35,7 @@ public abstract class BaseQueryHandler<TQuery, TQueryValidator, TResult> : IDisp
     protected IQueryable<T> QueryNonDeleted<T>() where T : DomainObject
     {
         return _dbContext.Set<T>()
+            .AsNoTracking()
             .Where(x => x.IsDeleted == false);
     }
 

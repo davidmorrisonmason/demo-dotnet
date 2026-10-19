@@ -36,6 +36,19 @@ public class EncryptionService : IEncryptionService
     private const int MemorySize = 19456; // 19 MB
 
     /// <summary>
+    /// Creates a deterministic SHA-256 fingerprint
+    /// </summary>
+    public string Fingerprint(string plainText)
+    {
+        if (string.IsNullOrEmpty(plainText))
+        {
+            throw new SecurityException(EncryptionErrorType.Plain_Text_Required.ToErrorMessage());
+        }
+
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(plainText)));
+    }
+
+    /// <summary>
     /// Generates a secure hash of a password using Argon2id with a random salt
     /// </summary>
     /// <param name="plainText">The plain text password to hash</param>

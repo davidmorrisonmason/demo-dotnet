@@ -56,6 +56,7 @@ namespace Demo.Api.Configuration
 
             services.AddValidatorsFromAssembly(queryAssembly);
             services.AddValidatorsFromAssembly(commandAssembly);
+            services.AddMemoryCache();
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IBasketRepository, BasketRepository>();
