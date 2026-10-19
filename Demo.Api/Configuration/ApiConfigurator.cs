@@ -25,7 +25,6 @@ using Mapster;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 using System.Reflection;
 using System.Text.Json;
@@ -169,17 +168,17 @@ namespace Demo.Api.Configuration
             // The populator dependency and startup seeding are purely for demo purposes.
             // Clearly this code has no place in a production api startup, but we just want some clean data
             // every time we deploy this demo API.
-            if (app.Environment.IsProduction())
-            {
-                using (var scope = app.Services.CreateScope())
-                {
-                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                    await db.Database.MigrateAsync();
+            //if (app.Environment.IsProduction())
+            //{
+            //    using (var scope = app.Services.CreateScope())
+            //    {
+            //        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            //        await db.Database.MigrateAsync();
 
-                    var populator = scope.ServiceProvider.GetRequiredService<IPopulationManager>();
-                    await populator.DoPopulation();
-                }
-            }
+            //        var populator = scope.ServiceProvider.GetRequiredService<IPopulationManager>();
+            //        await populator.DoPopulation();
+            //    }
+            //}
         }
 
         private static void ConfigureExceptionHandling(this WebApplication app)
